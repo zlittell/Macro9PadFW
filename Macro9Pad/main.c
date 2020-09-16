@@ -5,9 +5,13 @@
  * Author : zlitt
  */ 
 
+#define CFG_TUSB_MCU OPT_MCU_SAMD11
+#define CFG_TUSB_DEBUG 2 //TEMP
+
 
 #include "sam.h"
 #include "system_configuration.h"
+#include "tusb.h"
 
 
 int main(void)
@@ -34,6 +38,7 @@ int main(void)
 	  //init_TC2();
 
 	  //enable_interrupts();
+	  NVIC_EnableIRQ(USB_IRQn);
 	  
 	  tusb_init();
 	  
@@ -43,8 +48,7 @@ int main(void)
     /* Replace with your application code */
     while (1) 
     {
-		        __NOP();
-		        
-		        tud_task();
+		__NOP();
+		tud_task();
     }
 }

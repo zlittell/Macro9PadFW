@@ -30,15 +30,15 @@
     <EraseKey />
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.47.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.47.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
     <avrtoolserialnumber>J41800085804</avrtoolserialnumber>
@@ -121,8 +121,18 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
-      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
+      <Value>..</Value>
+      <Value>../tinyusb/src</Value>
+      <Value>../tinyusb/hw</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/config</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/include</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hal/include</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hal/utils/include</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hpl/pm</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hpl/port</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hri</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -140,6 +150,7 @@
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+  <armgcc.linker.memorysettings.ExternalRAM />
   <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14am_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
@@ -177,7 +188,58 @@
     <Compile Include="system_configuration.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="tinyusb\hw\mcu\microchip\samd11\hal\src\hal_atomic.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\hal_atomic.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\hw\mcu\microchip\samd11\hpl\gclk\hpl_gclk.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\hpl_gclk.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\hw\mcu\microchip\samd11\hpl\pm\hpl_pm.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\hpl_pm.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\hw\mcu\microchip\samd11\hpl\sysctrl\hpl_sysctrl.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\hpl_sysctrl.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\class\dfu\dfu_rt_device.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\dfu_rt_device.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\class\hid\hid_device.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\hid_device.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\class\vendor\vendor_device.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\vendor_device.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_fifo.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\tusb_fifo.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\device\usbd.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\usbd.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\device\usbd_control.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\usbd_control.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\samd\dcd_samd.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\dcd_samd.c</Link>
+    </Compile>
+    <Compile Include="tinyusb\src\tusb.c">
+      <SubType>compile</SubType>
+      <Link>USBStack\tusb.c</Link>
+    </Compile>
     <Compile Include="tusb_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="USBCallbacks.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usb_descriptors.c">
@@ -189,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />
+    <Folder Include="USBStack" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Device_Startup\samd11d14am_flash.ld">

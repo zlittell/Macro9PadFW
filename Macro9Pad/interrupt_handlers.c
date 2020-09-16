@@ -1,5 +1,4 @@
-
-#include <xc.h>
+#include "sam.h"
 
 void TC2_Handler()
 {
