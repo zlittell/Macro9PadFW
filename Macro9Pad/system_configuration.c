@@ -1,4 +1,8 @@
 #include <sam.h>
+#include "SystemStructures.h"
+
+struct DeviceInputs InputState = {0};
+struct DeviceInput_Debounce InputDebounceCount = {0};
 
 void configureClocks(void)
 {
@@ -14,7 +18,7 @@ void configureClocks(void)
     SYSCTRL->OSC8M.reg = ((SYSCTRL->OSC8M.reg & SYSCTRL_OSC8M_FRANGE_Msk) | 
             (SYSCTRL->OSC8M.reg & SYSCTRL_OSC8M_CALIB_Msk) | 
             SYSCTRL_OSC8M_PRESC_0 | SYSCTRL_OSC8M_ENABLE);
-    SYSCTRL->OSC32K.reg |= SYSCTRL_OSC32K_ENABLE;
+    SYSCTRL->OSC32K.reg |= (SYSCTRL_OSC32K_ENABLE | SYSCTRL_OSC32K_EN32K);
     //SYSCTRL->OSCULP32K.reg |= ((SYSCTRL->OSCULP32K.reg & SYSCTRL_OSCULP32K_CALIB_Msk) Not sure why it does this?
     while((SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_OSC8MRDY)==0);
     SYSCTRL->OSC8M.reg |= SYSCTRL_OSC8M_ONDEMAND;
@@ -28,13 +32,15 @@ void configureClocks(void)
     SYSCTRL->DFLLCTRL.reg = (SYSCTRL_DFLLCTRL_CCDIS | SYSCTRL_DFLLCTRL_USBCRM | SYSCTRL_DFLLCTRL_MODE | SYSCTRL_DFLLCTRL_ENABLE);
     while((SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0);
     while(GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
-    SYSCTRL->OSC32K.reg &= (~SYSCTRL_OSC32K_ENABLE);
+    //SYSCTRL->OSC32K.reg &= (~SYSCTRL_OSC32K_ENABLE);
     
     //_gclk_init_generators last init
     GCLK->GENDIV.reg = (GCLK_GENDIV_DIV(1) | GCLK_GENDIV_ID(0));
-    GCLK->GENCTRL.reg = (GCLK_GENCTRL_OE | GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC8M | GCLK_GENCTRL_ID(0));
+    GCLK->GENCTRL.reg = (GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC8M | GCLK_GENCTRL_ID(0));
     GCLK->GENDIV.reg = (GCLK_GENDIV_DIV(1) | GCLK_GENDIV_ID(1));
-    GCLK->GENCTRL.reg = (GCLK_GENCTRL_OE | GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_ID(1));
+    GCLK->GENCTRL.reg = (GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_ID(1));
+	GCLK->GENDIV.reg = (GCLK_GENDIV_DIV(1) | GCLK_GENDIV_ID(3));
+	GCLK->GENCTRL.reg = (GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC32K | GCLK_GENCTRL_ID(3));
     
     //init pins
     PM->APBBMASK.reg |= PM_APBBMASK_USB;
@@ -66,10 +72,8 @@ void init_TC2(void)
         
     TC2->COUNT16.INTENSET.reg = (TC_INTENSET_ERR | TC_INTENSET_MC0);
 
-    //This should be ~10mS interrupts
-    //TC2->COUNT16.CC[0].reg = 328;
-    
-    TC2->COUNT16.CC[0].reg = 3000;
+    //This should be ~1mS interrupts
+    TC2->COUNT16.CC[0].reg = 33;
     
     TC2->COUNT16.CTRLA.reg = 
             (TC_CTRLA_PRESCSYNC_PRESC | 
@@ -79,5 +83,44 @@ void init_TC2(void)
 
 void init_IO(void)
 {
-    
+	//Button1 - PA23
+	PORT->Group[0].DIRCLR.reg = PORT_PA23;
+	PORT->Group[0].PINCFG[23].reg = PORT_PINCFG_INEN;
+	//Button2 - PA02
+	PORT->Group[0].DIRCLR.reg = PORT_PA02;
+	PORT->Group[0].PINCFG[2].reg = PORT_PINCFG_INEN;
+	//Button3 - PA03
+	PORT->Group[0].DIRCLR.reg = PORT_PA03;
+	PORT->Group[0].PINCFG[3].reg = PORT_PINCFG_INEN;
+	//Button4 - PA11
+	PORT->Group[0].DIRCLR.reg = PORT_PA11;
+	PORT->Group[0].PINCFG[11].reg = PORT_PINCFG_INEN;
+	//Button5 - PA06
+	PORT->Group[0].DIRCLR.reg = PORT_PA06;
+	PORT->Group[0].PINCFG[6].reg = PORT_PINCFG_INEN;
+	//Button6 - PA04
+	PORT->Group[0].DIRCLR.reg = PORT_PA04;
+	PORT->Group[0].PINCFG[4].reg = PORT_PINCFG_INEN;
+	//Button7 - PA10
+	PORT->Group[0].DIRCLR.reg = PORT_PA10;
+	PORT->Group[0].PINCFG[10].reg = PORT_PINCFG_INEN;
+	//Button8 - PA07
+	PORT->Group[0].DIRCLR.reg = PORT_PA07;
+	PORT->Group[0].PINCFG[7].reg = PORT_PINCFG_INEN;
+	//Button9 - PA05
+	PORT->Group[0].DIRCLR.reg = PORT_PA05;
+	PORT->Group[0].PINCFG[5].reg = PORT_PINCFG_INEN;
+	//TestIO1 - PA17
+	PORT->Group[0].DIRCLR.reg = PORT_PA17;
+	PORT->Group[0].PINCFG[17].reg = PORT_PINCFG_INEN;
+	//TestIO2 - PA16
+	PORT->Group[0].DIRCLR.reg = PORT_PA16;
+	PORT->Group[0].PINCFG[16].reg = PORT_PINCFG_INEN;
+	//OnboardLED - PA27
+	PORT->Group[0].DIRSET.reg = PORT_PA27;
+	PORT->Group[0].OUTCLR.reg = PORT_PA27;
+	//UART_TX - PA08
+	//UART_RX - PA09
+	//I2C_SDA - PA14
+	//I2C_SCL - PA15
 }

@@ -170,6 +170,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="debug.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="debug.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
       <SubType>compile</SubType>
     </Compile>
@@ -179,7 +185,16 @@
     <Compile Include="interrupt_handlers.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="interrupt_handlers.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="main.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SystemStructures.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="system_configuration.c">
