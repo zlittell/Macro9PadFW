@@ -194,6 +194,14 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="MSF_I2C\MSF_I2C.c">
+      <SubType>compile</SubType>
+      <Link>Drivers\MSF_I2C.c</Link>
+    </Compile>
+    <Compile Include="MSF_I2C\MSF_I2C_SAMD11.C">
+      <SubType>compile</SubType>
+      <Link>Drivers\MSF_I2C_SAMD11.C</Link>
+    </Compile>
     <Compile Include="SystemStructures.h">
       <SubType>compile</SubType>
     </Compile>
@@ -266,6 +274,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />
+    <Folder Include="Drivers" />
     <Folder Include="USBStack" />
   </ItemGroup>
   <ItemGroup>

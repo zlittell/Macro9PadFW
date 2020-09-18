@@ -1,3 +1,6 @@
 [submodule "Macro9Pad/tinyusb"]
 	path = Macro9Pad/tinyusb
 	url = https://github.com/hathach/tinyusb.git
+[submodule "Macro9Pad/MSF_I2C"]
+	path = Macro9Pad/MSF_I2C
+	url = https://github.com/zlittell/MSF_I2C.git
