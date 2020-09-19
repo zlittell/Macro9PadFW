@@ -133,6 +133,7 @@
       <Value>../tinyusb/hw/mcu/microchip/samd11/hpl/port</Value>
       <Value>../tinyusb/hw/mcu/microchip/samd11/hri</Value>
       <Value>../tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include</Value>
+      <Value>../MSF_I2C</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
