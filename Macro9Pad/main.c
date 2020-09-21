@@ -24,7 +24,7 @@ int main(void)
 	
 	configureClocks();
 	init_IO();
-	init_TC2();	//enable this causes chip to constantly reset
+	init_TC2();
 	init_i2c();
 
 	enable_interrupts();
