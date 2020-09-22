@@ -12,6 +12,7 @@
 #include "interrupt_handlers.h"
 #include "SystemStructures.h"
 #include "MSF_I2C.h"
+#include "NXP_PCA9632.h"
 
 extern struct DeviceInputs InputState;
 
@@ -31,6 +32,8 @@ int main(void)
 	
 	tusb_init();
 	
+	LED_init();
+	LED_updateRGB(0xFF,0xFF,0xFF);
 	
 
 	/* Replace with your application code */
@@ -39,6 +42,7 @@ int main(void)
 		__NOP();
 		tud_task();
 		
+		/*
 		i2c_start(0x60);
 		i2c_write(0x00);
 		i2c_write(0x01);
@@ -51,9 +55,11 @@ int main(void)
 		i2c_write(0x08);
 		i2c_write(0x09);
 		i2c_stop();
+		*/
 		
 		if(InputState.Button1 == true)
 		{
+			/*
 			i2c_start(0xa0);
 			i2c_write(0x00);
 			i2c_write(0x01);
@@ -66,6 +72,7 @@ int main(void)
 			i2c_write(0x08);
 			i2c_write(0x09);
 			i2c_stop();
+			*/
 		}
 	}
 }

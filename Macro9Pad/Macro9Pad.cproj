@@ -134,6 +134,7 @@
       <Value>../tinyusb/hw/mcu/microchip/samd11/hri</Value>
       <Value>../tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include</Value>
       <Value>../MSF_I2C</Value>
+      <Value>../Drivers</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -181,6 +182,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\system_samd11.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\NXP_PCA9632.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\NXP_PCA9632.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="interrupt_handlers.c">
