@@ -14,8 +14,6 @@
 #include "MSF_I2C.h"
 #include "NXP_PCA9632.h"
 
-extern struct DeviceInputs InputState;
-
 int main(void)
 {
 	/* Initialize the SAM system */
@@ -33,29 +31,14 @@ int main(void)
 	tusb_init();
 	
 	LED_init();
-	LED_updateRGB(0xFF,0xFF,0xFF);
-	
+	LED_updateRed(0xFF);
+	LED_updateBrightness(0x10);
 
 	/* Replace with your application code */
 	while (1)
 	{
 		__NOP();
 		tud_task();
-		
-		/*
-		i2c_start(0x60);
-		i2c_write(0x00);
-		i2c_write(0x01);
-		i2c_write(0x02);
-		i2c_write(0x03);
-		i2c_write(0x04);
-		i2c_write(0x05);
-		i2c_write(0x06);
-		i2c_write(0x07);
-		i2c_write(0x08);
-		i2c_write(0x09);
-		i2c_stop();
-		*/
 		
 		if(InputState.Button1 == true)
 		{

@@ -17,6 +17,6 @@ void LED_updateRed(uint8_t);
 void LED_updateGreen(uint8_t);
 void LED_updateBlue(uint8_t);
 void LED_updateRGB(uint8_t, uint8_t, uint8_t);
-void LED_updateBrightness(void);
+void LED_updateBrightness(uint8_t);
 
 #endif /* NXP_PCA9632_H_ */

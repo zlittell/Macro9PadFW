@@ -36,16 +36,39 @@ const uint8_t PCA_MODE1_SUB3 = (1u << 1);
 const uint8_t PCA_MODE1_ALLCALL = (1u << 0);
 const uint8_t PCA_MODE2_DMBLNK = (1u << 5);
 const uint8_t PCA_MODE2_INVRT = (1u << 4);
-const uint8_t PCA_MODE_OCH = (1u << 3);
-const uint8_t PCA_MODE_OUTDRV = (1u << 2);
+const uint8_t PCA_MODE2_OCH = (1u << 3);
+const uint8_t PCA_MODE2_OUTDRV = (1u << 2);
+const uint8_t PCA_MODE2_OUTNE = (1u << 0);
+const uint8_t PCA_LEDOUT_LDR3_POS = (6u);
+const uint8_t PCA_LEDOUT_LDR2_POS = (4u);
+const uint8_t PCA_LEDOUT_LDR1_POS = (2u);
+const uint8_t PCA_LEDOUT_LDR0_POS = (0u);
+const uint8_t PCA_LDRx_OFF = (0u);
+const uint8_t PCA_LDRx_ON = (1u);
+const uint8_t PCA_LDRx_PWM = (2u);
+const uint8_t PCA_LDRx_PWMGRP = (3u);
 const uint8_t RGBLED_Red = (4u);
 const uint8_t RGBLED_Green = (3u);
 const uint8_t RGBLED_Blue = (2u);
 
 void LED_init(void)
 {
-	//reset device
-	i2c_send(PCARESETADDR, (uint8_t*)PCA_ResetCMD, PCA_ResetCMD_Length);	
+	i2c_send(PCARESETADDR, (uint8_t*)PCA_ResetCMD, PCA_ResetCMD_Length);
+	uint8_t config[10] = {
+		(PCA_REG_MODE1|PCA_AUTOINC_ALL),	//Start at 0x00 with auto increment
+		(PCA_MODE1_ALLCALL),	//MODE1
+		(PCA_MODE2_OUTNE),	//MODE2
+		0x00,	//PWM0
+		0x00,	//PWM1
+		0x00,	//PWM2
+		0x00,	//PWM3
+		0xFF,	//GRPPWM
+		0x00,	//GRPFREQ
+		((PCA_LDRx_PWMGRP << PCA_LEDOUT_LDR3_POS)|	//LEDOUT
+			(PCA_LDRx_PWMGRP << PCA_LEDOUT_LDR2_POS)|
+			(PCA_LDRx_PWMGRP << PCA_LEDOUT_LDR1_POS)| 
+			(PCA_LDRx_PWMGRP << PCA_LEDOUT_LDR0_POS))};
+	i2c_send(LEDADDR, config, 10);
 }
 
 void LED_updateRed(uint8_t value)
@@ -73,7 +96,8 @@ void LED_updateRGB(uint8_t value1, uint8_t value2, uint8_t value3)
 	i2c_send(LEDADDR, message, 4);
 }
 
-void LED_updateBrightness(void)
+void LED_updateBrightness(uint8_t value)
 {
-	
+	uint8_t message[2] = {(PCA_REG_GRPPWM | PCA_AUTOINC_NONE), value};
+	i2c_send(LEDADDR, message, 2);
 }
