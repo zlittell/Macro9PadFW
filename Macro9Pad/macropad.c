@@ -5,34 +5,11 @@
  *  Author: zlitt
  */ 
 
+#include <stdint.h>
 #include "macropad.h"
 #include "SystemStructures.h"
 
-struct DeviceProfile MacropadProfile = 
-{
-	.profileLED.Red = 0x00;
-	.profileLED.Green = 0x00;
-	.profileLED.Blue = 0x00;
-	.profileLED.Brightness = 0x00;
-	.Button1.Modifier = 0x00;
-	.Button1.Button = 0x00;
-	.Button2.Modifier = 0x00;
-	.Button2.Button = 0x00;
-	.Button3.Modifier = 0x00;
-	.Button3.Button = 0x00;
-	.Button4.Modifier = 0x00;
-	.Button4.Button = 0x00;
-	.Button5.Modifier = 0x00;
-	.Button5.Button = 0x00;
-	.Button6.Modifier = 0x00;
-	.Button6.Button = 0x00;
-	.Button7.Modifier = 0x00;
-	.Button7.Button = 0x00;
-	.Button8.Modifier = 0x00;
-	.Button8.Button = 0x00;
-	.Button9.Modifier = 0x00;
-	.Button9.Button = 0x00;
-};
+struct DeviceProfile MacropadProfile;
 
 //update a profile
 void ParseProfileMessage(uint8_t *message, uint8_t len)

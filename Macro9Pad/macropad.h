@@ -25,19 +25,19 @@ struct DeviceButton
 
 struct DeviceProfile
 {
-	RGBLED profileLED;
+	struct RGBLED profileLED;
 	//Row1
-	DeviceButton Button1;
-	DeviceButton Button2;
-	DeviceButton Button3;
+	struct DeviceButton Button1;
+	struct DeviceButton Button2;
+	struct DeviceButton Button3;
 	//Row2
-	DeviceButton Button4;
-	DeviceButton Button5;
-	DeviceButton Button6;
+	struct DeviceButton Button4;
+	struct DeviceButton Button5;
+	struct DeviceButton Button6;
 	//Row3
-	DeviceButton Button7;
-	DeviceButton Button8;
-	DeviceButton Button9;
+	struct DeviceButton Button7;
+	struct DeviceButton Button8;
+	struct DeviceButton Button9;
 };
 
 #endif /* MACROPAD_H_ */

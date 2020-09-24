@@ -196,6 +196,12 @@
     <Compile Include="interrupt_handlers.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="macropad.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="macropad.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
