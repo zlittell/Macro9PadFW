@@ -282,9 +282,6 @@
     <Compile Include="usb_descriptors.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="usb_descriptors.h">
-      <SubType>compile</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />

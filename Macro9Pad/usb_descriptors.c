@@ -26,31 +26,21 @@
 #include "tusb.h"
 #include "usb_descriptors.h"
 
-/* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
- * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
- *
- * Auto ProductID layout's Bitmap:
- *   [MSB]         HID | MSC | CDC          [LSB]
- */
-#define _PID_MAP(itf, n)  ( (CFG_TUD_##itf) << (n) )
-#define USB_PID           (0x4000 | _PID_MAP(CDC, 0) | _PID_MAP(MSC, 1) | _PID_MAP(HID, 2) | \
-                           _PID_MAP(MIDI, 3) | _PID_MAP(VENDOR, 4) )
-
 //--------------------------------------------------------------------+
 // Device Descriptors
 //--------------------------------------------------------------------+
 tusb_desc_device_t const desc_device =
 {
     .bLength            = sizeof(tusb_desc_device_t),
-    .bDescriptorType    = TUSB_DESC_DEVICE,
-    .bcdUSB             = 0x0200,
-    .bDeviceClass       = 0x00,
+    .bDescriptorType    = 0x01,	//Device TYPE
+    .bcdUSB             = 0x0200,	//USB Spec Release 2.00
+    .bDeviceClass       = 0x03,	//Base Class HID
     .bDeviceSubClass    = 0x00,
     .bDeviceProtocol    = 0x00,
-    .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
+    .bMaxPacketSize0    = 8,
 
-    .idVendor           = 0xCafe,
-    .idProduct          = USB_PID,
+    .idVendor           = 0x1209,	// PID.Codes VID
+    .idProduct          = 0x9001,	// TODO Still need to register this
     .bcdDevice          = 0x0100,
 
     .iManufacturer      = 0x01,
@@ -73,8 +63,6 @@ uint8_t const * tud_descriptor_device_cb(void)
 
 uint8_t const desc_hid_report[] =
 {
-  TUD_HID_REPORT_DESC_KEYBOARD( HID_REPORT_ID(REPORT_ID_KEYBOARD) ),
-  TUD_HID_REPORT_DESC_MOUSE   ( HID_REPORT_ID(REPORT_ID_MOUSE) )
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
@@ -89,23 +77,101 @@ uint8_t const * tud_hid_descriptor_report_cb(void)
 // Configuration Descriptor
 //--------------------------------------------------------------------+
 
-enum
-{
-  ITF_NUM_HID,
-  ITF_NUM_TOTAL
-};
-
-#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN)
-
-#define EPNUM_HID   0x81
-
 uint8_t const desc_configuration[] =
 {
-  // Config number, interface count, string index, total length, attribute, power in mA
-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
-
-  // Interface number, string index, protocol, report descriptor len, EP In & Out address, size & polling interval
-  TUD_HID_DESCRIPTOR(ITF_NUM_HID, 0, HID_PROTOCOL_NONE, sizeof(desc_hid_report), EPNUM_HID, CFG_TUD_HID_EP_BUFSIZE, 10)
+	// Configuration Descriptor
+	0x09,		// bLength
+	0x02,		// bDescriptorType (Configuration)
+	0x29, 0x00	// bTotalLength (this is 41 but recalculate this)
+	0x02,		// bNumInterfaces
+	0x01,		// bConfigurationValue
+	0x00,		// iConfiguration
+	0xA0,		// bmAttributes (Bus Powered, Remote Wakeup)
+	0x32,		// bMaxPower (2mA units x 50 units = 100mA)
+	
+	/*
+	 ****************************************
+	 * CONFIG INTERFACE
+	 ****************************************
+	*/
+	
+	// First Interface Descriptor (Config Interface)
+	0x09,		// bLength
+	0x04,		// bDescriptorType (interface)
+	0x00,		// bInterfaceNumber (Interface 0)
+	0x00,		// bAlternateSetting
+	0x02,		// bNumEndpoints
+	0x03,		// bInterfaceClass (3 HID)
+	0x00,		// bInterfaceSubclass
+	0x00,		// bInterfaceProtocol
+	0x00,		// bInterface
+	
+	// HID Descriptor
+	0x09,		// bLength
+	0x21,		// bDescriptorType (HID)
+	0x10, 0x01,	// bcdHID (V1.1)
+	0x00,		// bCountryCode
+	0x01,		// bNumDescriptors
+	0x22,		// bDescriptorType (Still a report descriptor left)
+	0x2f, 0x00,	// bDescriptorLength (47 bytes)
+	
+	// EP1 IN Endpoint Descriptor
+	0x07,		// bLength
+	0x05,		// bDescriptorType (endpoint)
+	0x81,		// bEndpointAddress (EP1 IN)
+	0x03,		// bmAttributes (Interrupt Transfer)
+	0x20, 0x00,	// wMaxPacketSize (TODO need to update this)
+	0x05,		// bInterval (5ms can be a bit slower for this interface)
+	
+	// EP1 OUT Endpoint Descriptor
+	0x07,		// bLength
+	0x05,		// BDescriptorType
+	0x01,		// bEndpointAddress (EP1 OUT)
+	0x03,		// bmAttributes (Interrupt Transfer)
+	0x20, 0x00,	// wMaxPacketSize (TODO need to update this)
+	0x05,		// bInterval
+	
+	/*
+	 ****************************************
+	 * KEYBOARD INTERFACE
+	 ****************************************
+	*/
+	
+	// Second Interface Descriptor (Keyboard Interface)
+	0x09,		// bLength
+	0x04,		// bDescriptorType (interface)
+	0x01,		// bInterfaceNumber (Interface 1)
+	0x00,		// bAlternateSetting
+	0x02,		// bNumEndpoints
+	0x03,		// bInterfaceClass (3 HID)
+	0x01,		// bInterfaceSubclass (1 boot)
+	0x01,		// bInterfaceProtocol (1 Keyboard)
+	0x00,		// bInterface
+	
+	// HID Descriptor
+	0x09,		// bLength
+	0x21,		// bDescriptorType (HID)
+	0x10, 0x01,	// bcdHID (V1.1)
+	0x00,		// bCountryCode
+	0x01,		// bNumDescriptors
+	0x22,		// bDescriptorType (Still a report descriptor left)
+	0x2f, 0x00,	// bDescriptorLength (47 bytes)
+	
+	// EP1 IN Endpoint Descriptor
+	0x07,		// bLength
+	0x05,		// bDescriptorType (endpoint)
+	0x82,		// bEndpointAddress (EP2 IN)
+	0x03,		// bmAttributes (Interrupt Transfer)
+	0x08, 0x00,	// wMaxPacketSize
+	0x01,		// bInterval (1mS fast)
+	
+	// EP1 OUT Endpoint Descriptor
+	0x07,		// bLength
+	0x05,		// BDescriptorType
+	0x02,		// bEndpointAddress (EP2 OUT)
+	0x03,		// bmAttributes (Interrupt Transfer)
+	0x04, 0x00,	// wMaxPacketSize
+	0x01		// bInterval (1mS fast)
 };
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
@@ -122,12 +188,18 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 //--------------------------------------------------------------------+
 
 // array of pointer to string descriptors
+/*
+	Make serial something unique so we can try finding it later and replacing it
+	we can also put it in a specific location.
+	Then you can edit that section of the output hex when programming in production
+	You could also read this in from EEPROM
+*/
 char const* string_desc_arr [] =
 {
   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
-  "TinyUSB",                     // 1: Manufacturer
-  "TinyUSB Device",              // 2: Product
-  "123456",                      // 3: Serials, should use chip ID
+  "Mechanical Squid Factory",		// 1: Manufacturer
+  "MACRO9PAD",						// 2: Product
+  "abc123!",						// 3: Serials, should use chip ID
 };
 
 static uint16_t _desc_str[32];
