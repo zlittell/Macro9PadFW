@@ -63,6 +63,54 @@ uint8_t const * tud_descriptor_device_cb(void)
 
 uint8_t const desc_hid_report[] =
 {
+	0x06, 0x01, 0x00,	// USAGE_PAGE (Generic Desktop)
+	0x09, 0x01,			// USAGE (Vendor Usage 1)
+	0xA1, 0x01,			// COLLECTION (Application)
+	0x85, 0x01,			// REPORT_ID (1)
+	0x15, 0x00,			// LOGICAL_MINIMUM (0)
+	0x26, 0xFF, 0x00,	// LOGICAL_MAXIMUM (255)
+	0x75, 0x08,			// REPORT_SIZE (8)
+	0x95, 0x14,			// REPORT_COUNT (20)
+	0x81, 0x00,			// INPUT (Data,Ary,Abs)
+	0x15, 0x00,			// LOGICAL_MINIMUM (0)
+	0x26, 0xFF, 0x00,	// LOGICAL_MAXIMUM (255)
+	0x75, 0x08,			// REPORT_SIZE (8)
+	0x95, 0x14,			// REPORT_COUNT (20)
+	0x91, 0x00,			// OUTPUT (Data,Ary,Abs)
+	0xC0,				// END_COLLECTION
+	0x05, 0x01,			// USAGE_PAGE (Generic Desktop)
+	0x09, 0x06,			// USAGE (Keyboard)
+	0xA1, 0x01,			// COLLECTION (Application)
+	0x85, 0x02,			// REPORT_ID (2)
+	0x05, 0x07,			// USAGE_PAGE (Keyboard)
+	0x19, 0xE0,			// USAGE_MINIMUM (Keyboard LeftControl)
+	0x29, 0xE7,			// USAGE_MAXIMUM (Keyboard Right GUI)
+	0x15, 0x00,			// LOGICAL_MINIMUM (0)
+	0x25, 0x01,			// LOGICAL_MAXIMUM (1)
+	0x75, 0x01,			// REPORT_SIZE (1)
+	0x95, 0x08,			// REPORT_COUNT (8)
+	0x81, 0x02,			// INPUT (Data,Var,Abs)
+	0x75, 0x08,			// REPORT_SIZE (8)
+	0x95, 0x01,			// REPORT_COUNT (1)
+	0x81, 0x01,			// INPUT (Cnst,Ary,Abs)
+	0x05, 0x08,			// USAGE_PAGE (LEDs)
+	0x19, 0x01,			// USAGE_MINIMUM (Num Lock)
+	0x29, 0x05,			// USAGE_MAXIMUM (Kana)
+	0x75, 0x01,			// REPORT_SIZE (1)
+	0x95, 0x05,			// REPORT_COUNT (5)
+	0x91, 0x02,			// OUTPUT (Data,Var,Abs)
+	0x75, 0x03,			// REPORT_SIZE (3)
+	0x95, 0x01,			// REPORT_COUNT (1)
+	0x91, 0x01,			// OUTPUT (Cnst,Ary,Abs)
+	0x05, 0x07,			// USAGE_PAGE (Keyboard)
+	0x19, 0x00,			// USAGE_MINIMUM (Reserved (no event indicated))
+	0x29, 0x65,			// USAGE_MAXIMUM (Keyboard Application)
+	0x15, 0x00,			// LOGICAL_MINIMUM (0)
+	0x25, 0x65,			// LOGICAL_MAXIMUM (101)
+	0x75, 0x08,			// REPORT_SIZE (8)
+	0x95, 0x09,			// REPORT_COUNT (9)
+	0x81, 0x00,			// INPUT (Data,Ary,Abs)
+	0xC0				// END_COLLECTION
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
@@ -82,7 +130,7 @@ uint8_t const desc_configuration[] =
 	// Configuration Descriptor
 	0x09,		// bLength
 	0x02,		// bDescriptorType (Configuration)
-	0x29, 0x00	// bTotalLength (this is 41 but recalculate this)
+	0x49, 0x00,	// bTotalLength (this is 41 but recalculate this)
 	0x02,		// bNumInterfaces
 	0x01,		// bConfigurationValue
 	0x00,		// iConfiguration
