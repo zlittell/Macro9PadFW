@@ -29,32 +29,29 @@
 //--------------------------------------------------------------------+
 // Device Descriptors
 //--------------------------------------------------------------------+
-tusb_desc_device_t const desc_device =
+uint8_t const device_descriptor[] =
 {
-    .bLength            = sizeof(tusb_desc_device_t),
-    .bDescriptorType    = 0x01,	//Device TYPE
-    .bcdUSB             = 0x0200,	//USB Spec Release 2.00
-    .bDeviceClass       = 0x03,	//Base Class HID
-    .bDeviceSubClass    = 0x00,
-    .bDeviceProtocol    = 0x00,
-    .bMaxPacketSize0    = 8,
-
-    .idVendor           = 0x1209,	// PID.Codes VID
-    .idProduct          = 0x9001,	// TODO Still need to register this
-    .bcdDevice          = 0x0100,
-
-    .iManufacturer      = 0x01,
-    .iProduct           = 0x02,
-    .iSerialNumber      = 0x03,
-
-    .bNumConfigurations = 0x01
+	0x12,			// Length (18bytes)
+    0x01,			// Device TYPE
+    0x00, 0x02,		// USB Spec Release 2.00
+    0x00,			// Base Class HID
+    0x00,			// Device Subclass
+    0x00,			// Protocol
+    64,				// EP0Length
+	0x09, 0x12,		// PID.Codes VID
+	0x02, 0x90,		// PID TODO Still need to register this
+	0x00, 0x01,		// Device Release 1.00
+	0x01,			// Manufacturer string 1
+	0x02,			// Product string 2
+	0x03,			// Serial String 3
+	0x01			// Number of Configurations
 };
 
 // Invoked when received GET DEVICE DESCRIPTOR
 // Application return pointer to descriptor
 uint8_t const * tud_descriptor_device_cb(void)
 {
-  return (uint8_t const *) &desc_device;
+  return device_descriptor;
 }
 
 //--------------------------------------------------------------------+
@@ -63,54 +60,66 @@ uint8_t const * tud_descriptor_device_cb(void)
 
 uint8_t const desc_hid_report[] =
 {
-	0x06, 0x01, 0x00,	// USAGE_PAGE (Generic Desktop)
+	// ***********************************
+	// Interface Descriptor
+	// ***********************************
+	0x06, 0x00, 0xFF,	// USAGE_PAGE (Vendor Defined Page 1)
 	0x09, 0x01,			// USAGE (Vendor Usage 1)
 	0xA1, 0x01,			// COLLECTION (Application)
-	0x85, 0x01,			// REPORT_ID (1)
-	0x15, 0x00,			// LOGICAL_MINIMUM (0)
-	0x26, 0xFF, 0x00,	// LOGICAL_MAXIMUM (255)
-	0x75, 0x08,			// REPORT_SIZE (8)
-	0x95, 0x14,			// REPORT_COUNT (20)
-	0x81, 0x00,			// INPUT (Data,Ary,Abs)
-	0x15, 0x00,			// LOGICAL_MINIMUM (0)
-	0x26, 0xFF, 0x00,	// LOGICAL_MAXIMUM (255)
-	0x75, 0x08,			// REPORT_SIZE (8)
-	0x95, 0x14,			// REPORT_COUNT (20)
-	0x91, 0x00,			// OUTPUT (Data,Ary,Abs)
+    0x85, 0x01,             //REPORT_ID (1)
+    0x19, 0x00,             //USAGE_MINIMUM (Undefined)
+    0x29, 0x02,             //USAGE_MAXIMUM (Vendor Usage 2)
+    0x75, 0x08,             //REPORT_SIZE (8)
+    0x95, 0x15,             //REPORT_COUNT (21)
+    0x81, 0x00,             //INPUT (Data,Ary,Abs)
+    0x19, 0x00,             //USAGE_MINIMUM (Undefined)
+    0x29, 0x02,             //USAGE_MAXIMUM (Vendor Usage 2)
+    0x75, 0x08,             //REPORT_SIZE (8)
+    0x95, 0x15,             //REPORT_COUNT (21)
+    0x91, 0x00,             //OUTPUT (Data,Ary,Abs)
 	0xC0,				// END_COLLECTION
-	0x05, 0x01,			// USAGE_PAGE (Generic Desktop)
-	0x09, 0x06,			// USAGE (Keyboard)
-	0xA1, 0x01,			// COLLECTION (Application)
-	0x85, 0x02,			// REPORT_ID (2)
-	0x05, 0x07,			// USAGE_PAGE (Keyboard)
-	0x19, 0xE0,			// USAGE_MINIMUM (Keyboard LeftControl)
-	0x29, 0xE7,			// USAGE_MAXIMUM (Keyboard Right GUI)
-	0x15, 0x00,			// LOGICAL_MINIMUM (0)
-	0x25, 0x01,			// LOGICAL_MAXIMUM (1)
-	0x75, 0x01,			// REPORT_SIZE (1)
-	0x95, 0x08,			// REPORT_COUNT (8)
-	0x81, 0x02,			// INPUT (Data,Var,Abs)
-	0x75, 0x08,			// REPORT_SIZE (8)
-	0x95, 0x01,			// REPORT_COUNT (1)
-	0x81, 0x01,			// INPUT (Cnst,Ary,Abs)
-	0x05, 0x08,			// USAGE_PAGE (LEDs)
-	0x19, 0x01,			// USAGE_MINIMUM (Num Lock)
-	0x29, 0x05,			// USAGE_MAXIMUM (Kana)
-	0x75, 0x01,			// REPORT_SIZE (1)
-	0x95, 0x05,			// REPORT_COUNT (5)
-	0x91, 0x02,			// OUTPUT (Data,Var,Abs)
-	0x75, 0x03,			// REPORT_SIZE (3)
-	0x95, 0x01,			// REPORT_COUNT (1)
-	0x91, 0x01,			// OUTPUT (Cnst,Ary,Abs)
-	0x05, 0x07,			// USAGE_PAGE (Keyboard)
-	0x19, 0x00,			// USAGE_MINIMUM (Reserved (no event indicated))
-	0x29, 0x65,			// USAGE_MAXIMUM (Keyboard Application)
-	0x15, 0x00,			// LOGICAL_MINIMUM (0)
-	0x25, 0x65,			// LOGICAL_MAXIMUM (101)
-	0x75, 0x08,			// REPORT_SIZE (8)
-	0x95, 0x09,			// REPORT_COUNT (9)
-	0x81, 0x00,			// INPUT (Data,Ary,Abs)
-	0xC0				// END_COLLECTION
+	
+	// ***********************************
+	// Keyboard Descriptor
+	// ***********************************
+	0x05,0x01,			//USAGE_PAGE (Generic Desktop)
+	0x09,0x06,			//USAGE (Keyboard)
+	0xA1,0x01,			//COLLECTION (Application)
+	0x85,0x02,				//REPORT_ID (2)
+	//Modifiers
+	0x05,0x07,				//USAGE_PAGE (Keyboard)
+	0x19,0xE0,				//USAGE_MINIMUM (Keyboard LeftControl)
+	0x29,0xE7,				//USAGE_MAXIMUM (Keyboard Right GUI)
+	0x15,0x00,				//LOGICAL_MINIMUM (0)
+	0x25,0x01,				//LOGICAL_MAXIMUM (1)
+	0x75,0x01,				//REPORT_SIZE (1)
+	0x95,0x08,				//REPORT_COUNT (8)
+	0x81,0x02,				//INPUT (Data,Var,Abs)
+	//BIOS Stuff
+	0x75,0x08,				//REPORT_SIZE (8)
+	0x95,0x01,				//REPORT_COUNT (1)
+	0x81,0x01,				//INPUT (Cnst,Var,Abs)
+	//LED CONTROLLER
+	0x05,0x08,				//USAGE_PAGE (LEDs)
+	0x19,0x01,				//USAGE_MINIMUM (1)
+	0x29,0x05,				//USAGE_MAXIMUM (5)
+	0x75,0x01,				//REPORT_SIZE (1)
+	0x95,0x05,				//REPORT_COUNT (5)
+	0x91,0x02,				//OUTPUT (Data,Var,Abs)
+	//LED BIT PADDING
+	0x75,0x03,				//REPORT_SIZE (3)
+	0x95,0x01,				//REPORT_COUNT (1)
+	0x91,0x01,				//OUTPUT (Cnst)
+	//Keyboard Keys
+	0x05,0x07,				//USAGE_PAGE (Keyboard)
+	0x19,0x00,				//USAGE_MINIMUM (Reserved (no event indicated))
+	0x29,0x65,				//USAGE_MAXIMUM (Keyboard Application)
+	0x15,0x00,				//LOGICAL_MINIMUM (0)
+	0x25,0x65,				//LOGICAL_MAXIMUM (101)
+	0x75,0x08,				//REPORT_SIZE (8)
+	0x95,0x09,				//REPORT_COUNT (9)
+	0x81,0x00,				//INPUT (Data,Ary,Abs)
+	0xC0				//END_COLLECTION
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
@@ -146,7 +155,7 @@ uint8_t const desc_configuration[] =
 	// First Interface Descriptor (Config Interface)
 	0x09,		// bLength
 	0x04,		// bDescriptorType (interface)
-	0x00,		// bInterfaceNumber (Interface 0)
+	0x01,		// bInterfaceNumber (Interface 0)
 	0x00,		// bAlternateSetting
 	0x02,		// bNumEndpoints
 	0x03,		// bInterfaceClass (3 HID)
@@ -161,14 +170,14 @@ uint8_t const desc_configuration[] =
 	0x00,		// bCountryCode
 	0x01,		// bNumDescriptors
 	0x22,		// bDescriptorType (Still a report descriptor left)
-	0x2f, 0x00,	// bDescriptorLength (47 bytes)
+	0x20, 0x00,	// bDescriptorLength (47 bytes)
 	
 	// EP1 IN Endpoint Descriptor
 	0x07,		// bLength
 	0x05,		// bDescriptorType (endpoint)
 	0x81,		// bEndpointAddress (EP1 IN)
 	0x03,		// bmAttributes (Interrupt Transfer)
-	0x20, 0x00,	// wMaxPacketSize (TODO need to update this)
+	0x16, 0x00,	// wMaxPacketSize (TODO need to update this)
 	0x05,		// bInterval (5ms can be a bit slower for this interface)
 	
 	// EP1 OUT Endpoint Descriptor
@@ -176,7 +185,7 @@ uint8_t const desc_configuration[] =
 	0x05,		// BDescriptorType
 	0x01,		// bEndpointAddress (EP1 OUT)
 	0x03,		// bmAttributes (Interrupt Transfer)
-	0x20, 0x00,	// wMaxPacketSize (TODO need to update this)
+	0x16, 0x00,	// wMaxPacketSize (TODO need to update this)
 	0x05,		// bInterval
 	
 	/*
@@ -188,7 +197,7 @@ uint8_t const desc_configuration[] =
 	// Second Interface Descriptor (Keyboard Interface)
 	0x09,		// bLength
 	0x04,		// bDescriptorType (interface)
-	0x01,		// bInterfaceNumber (Interface 1)
+	0x02,		// bInterfaceNumber (Interface 1)
 	0x00,		// bAlternateSetting
 	0x02,		// bNumEndpoints
 	0x03,		// bInterfaceClass (3 HID)
@@ -203,14 +212,14 @@ uint8_t const desc_configuration[] =
 	0x00,		// bCountryCode
 	0x01,		// bNumDescriptors
 	0x22,		// bDescriptorType (Still a report descriptor left)
-	0x2f, 0x00,	// bDescriptorLength (47 bytes)
+	0x41, 0x00,	// bDescriptorLength (47 bytes)
 	
 	// EP1 IN Endpoint Descriptor
 	0x07,		// bLength
 	0x05,		// bDescriptorType (endpoint)
 	0x82,		// bEndpointAddress (EP2 IN)
 	0x03,		// bmAttributes (Interrupt Transfer)
-	0x08, 0x00,	// wMaxPacketSize
+	0x0C, 0x00,	// wMaxPacketSize
 	0x01,		// bInterval (1mS fast)
 	
 	// EP1 OUT Endpoint Descriptor
@@ -218,7 +227,7 @@ uint8_t const desc_configuration[] =
 	0x05,		// BDescriptorType
 	0x02,		// bEndpointAddress (EP2 OUT)
 	0x03,		// bmAttributes (Interrupt Transfer)
-	0x04, 0x00,	// wMaxPacketSize
+	0x02, 0x00,	// wMaxPacketSize
 	0x01		// bInterval (1mS fast)
 };
 
@@ -244,10 +253,10 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 */
 char const* string_desc_arr [] =
 {
-  (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
+  (const char[]) { 0x09, 0x04 },	// 0: is supported language is English (0x0409)
   "Mechanical Squid Factory",		// 1: Manufacturer
   "MACRO9PAD",						// 2: Product
-  "abc123!",						// 3: Serials, should use chip ID
+  "123456"			// 3: Serials, should use chip ID
 };
 
 static uint16_t _desc_str[32];
