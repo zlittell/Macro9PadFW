@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2019 Ha Thach (tinyusb.org)
@@ -24,211 +24,103 @@
  */
 
 #include "tusb.h"
-#include "usb_descriptors.h"
+
+/* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
+ * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
+ *
+ * Auto ProductID layout's Bitmap:
+ *   [MSB]         HID | MSC | CDC          [LSB]
+ */
+#define _PID_MAP(itf, n)  ( (CFG_TUD_##itf) << (n) )
+#define USB_PID           (0x4000 | _PID_MAP(CDC, 0) | _PID_MAP(MSC, 1) | _PID_MAP(HID, 2) | \
+                           _PID_MAP(MIDI, 3) | _PID_MAP(VENDOR, 4) )
 
 //--------------------------------------------------------------------+
 // Device Descriptors
 //--------------------------------------------------------------------+
-uint8_t const device_descriptor[] =
+tusb_desc_device_t const desc_device =
 {
-	0x12,			// Length (18bytes)
-    0x01,			// Device TYPE
-    0x00, 0x02,		// USB Spec Release 2.00
-    0x00,			// Base Class HID
-    0x00,			// Device Subclass
-    0x00,			// Protocol
-    64,				// EP0Length
-	0x09, 0x12,		// PID.Codes VID
-	0x02, 0x90,		// PID TODO Still need to register this
-	0x00, 0x01,		// Device Release 1.00
-	0x01,			// Manufacturer string 1
-	0x02,			// Product string 2
-	0x03,			// Serial String 3
-	0x01			// Number of Configurations
+    .bLength            = sizeof(tusb_desc_device_t),
+    .bDescriptorType    = TUSB_DESC_DEVICE,
+    .bcdUSB             = 0x0200,
+    .bDeviceClass       = 0x00,
+    .bDeviceSubClass    = 0x00,
+    .bDeviceProtocol    = 0x00,
+    .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
+
+    .idVendor           = 0xCafe,
+    .idProduct          = USB_PID,
+    .bcdDevice          = 0x0100,
+
+    .iManufacturer      = 0x01,
+    .iProduct           = 0x02,
+    .iSerialNumber      = 0x03,
+
+    .bNumConfigurations = 0x01
 };
 
 // Invoked when received GET DEVICE DESCRIPTOR
 // Application return pointer to descriptor
 uint8_t const * tud_descriptor_device_cb(void)
 {
-  return device_descriptor;
+  return (uint8_t const *) &desc_device;
 }
 
 //--------------------------------------------------------------------+
 // HID Report Descriptor
 //--------------------------------------------------------------------+
 
-uint8_t const desc_hid_report[] =
+uint8_t const desc_hid_report1[] =
 {
-	// ***********************************
-	// Interface Descriptor
-	// ***********************************
-	0x06, 0x00, 0xFF,	// USAGE_PAGE (Vendor Defined Page 1)
-	0x09, 0x01,			// USAGE (Vendor Usage 1)
-	0xA1, 0x01,			// COLLECTION (Application)
-    0x85, 0x01,             //REPORT_ID (1)
-    0x19, 0x00,             //USAGE_MINIMUM (Undefined)
-    0x29, 0x02,             //USAGE_MAXIMUM (Vendor Usage 2)
-    0x75, 0x08,             //REPORT_SIZE (8)
-    0x95, 0x15,             //REPORT_COUNT (21)
-    0x81, 0x00,             //INPUT (Data,Ary,Abs)
-    0x19, 0x00,             //USAGE_MINIMUM (Undefined)
-    0x29, 0x02,             //USAGE_MAXIMUM (Vendor Usage 2)
-    0x75, 0x08,             //REPORT_SIZE (8)
-    0x95, 0x15,             //REPORT_COUNT (21)
-    0x91, 0x00,             //OUTPUT (Data,Ary,Abs)
-	0xC0,				// END_COLLECTION
-	
-	// ***********************************
-	// Keyboard Descriptor
-	// ***********************************
-	0x05,0x01,			//USAGE_PAGE (Generic Desktop)
-	0x09,0x06,			//USAGE (Keyboard)
-	0xA1,0x01,			//COLLECTION (Application)
-	0x85,0x02,				//REPORT_ID (2)
-	//Modifiers
-	0x05,0x07,				//USAGE_PAGE (Keyboard)
-	0x19,0xE0,				//USAGE_MINIMUM (Keyboard LeftControl)
-	0x29,0xE7,				//USAGE_MAXIMUM (Keyboard Right GUI)
-	0x15,0x00,				//LOGICAL_MINIMUM (0)
-	0x25,0x01,				//LOGICAL_MAXIMUM (1)
-	0x75,0x01,				//REPORT_SIZE (1)
-	0x95,0x08,				//REPORT_COUNT (8)
-	0x81,0x02,				//INPUT (Data,Var,Abs)
-	//BIOS Stuff
-	0x75,0x08,				//REPORT_SIZE (8)
-	0x95,0x01,				//REPORT_COUNT (1)
-	0x81,0x01,				//INPUT (Cnst,Var,Abs)
-	//LED CONTROLLER
-	0x05,0x08,				//USAGE_PAGE (LEDs)
-	0x19,0x01,				//USAGE_MINIMUM (1)
-	0x29,0x05,				//USAGE_MAXIMUM (5)
-	0x75,0x01,				//REPORT_SIZE (1)
-	0x95,0x05,				//REPORT_COUNT (5)
-	0x91,0x02,				//OUTPUT (Data,Var,Abs)
-	//LED BIT PADDING
-	0x75,0x03,				//REPORT_SIZE (3)
-	0x95,0x01,				//REPORT_COUNT (1)
-	0x91,0x01,				//OUTPUT (Cnst)
-	//Keyboard Keys
-	0x05,0x07,				//USAGE_PAGE (Keyboard)
-	0x19,0x00,				//USAGE_MINIMUM (Reserved (no event indicated))
-	0x29,0x65,				//USAGE_MAXIMUM (Keyboard Application)
-	0x15,0x00,				//LOGICAL_MINIMUM (0)
-	0x25,0x65,				//LOGICAL_MAXIMUM (101)
-	0x75,0x08,				//REPORT_SIZE (8)
-	0x95,0x09,				//REPORT_COUNT (9)
-	0x81,0x00,				//INPUT (Data,Ary,Abs)
-	0xC0				//END_COLLECTION
+  TUD_HID_REPORT_DESC_KEYBOARD()
+};
+
+uint8_t desc_hid_report2[] =
+{
+  TUD_HID_REPORT_DESC_MOUSE()
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
-uint8_t const * tud_hid_descriptor_report_cb(void)
+uint8_t const * tud_hid_descriptor_report_cb(uint8_t desc_index)
 {
-  return desc_hid_report;
+  if (desc_index == 0)
+	{
+		return desc_hid_report1;
+	}
+	else if (desc_index == 1)
+	{
+		return desc_hid_report2;
+	}
+
+		return 0;
 }
 
 //--------------------------------------------------------------------+
 // Configuration Descriptor
 //--------------------------------------------------------------------+
 
+enum
+{
+  ITF_NUM_HID1,
+  ITF_NUM_HID2,
+  ITF_NUM_TOTAL
+};
+
+#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN + TUD_HID_DESC_LEN)
+
+#define EPNUM_HID1   0x81
+#define EPNUM_HID2   0x82
+
 uint8_t const desc_configuration[] =
 {
-	// Configuration Descriptor
-	0x09,		// bLength
-	0x02,		// bDescriptorType (Configuration)
-	0x49, 0x00,	// bTotalLength (this is 41 but recalculate this)
-	0x02,		// bNumInterfaces
-	0x01,		// bConfigurationValue
-	0x00,		// iConfiguration
-	0xA0,		// bmAttributes (Bus Powered, Remote Wakeup)
-	0x32,		// bMaxPower (2mA units x 50 units = 100mA)
-	
-	/*
-	 ****************************************
-	 * CONFIG INTERFACE
-	 ****************************************
-	*/
-	
-	// First Interface Descriptor (Config Interface)
-	0x09,		// bLength
-	0x04,		// bDescriptorType (interface)
-	0x01,		// bInterfaceNumber (Interface 0)
-	0x00,		// bAlternateSetting
-	0x02,		// bNumEndpoints
-	0x03,		// bInterfaceClass (3 HID)
-	0x00,		// bInterfaceSubclass
-	0x00,		// bInterfaceProtocol
-	0x00,		// bInterface
-	
-	// HID Descriptor
-	0x09,		// bLength
-	0x21,		// bDescriptorType (HID)
-	0x10, 0x01,	// bcdHID (V1.1)
-	0x00,		// bCountryCode
-	0x01,		// bNumDescriptors
-	0x22,		// bDescriptorType (Still a report descriptor left)
-	0x20, 0x00,	// bDescriptorLength (47 bytes)
-	
-	// EP1 IN Endpoint Descriptor
-	0x07,		// bLength
-	0x05,		// bDescriptorType (endpoint)
-	0x81,		// bEndpointAddress (EP1 IN)
-	0x03,		// bmAttributes (Interrupt Transfer)
-	0x16, 0x00,	// wMaxPacketSize (TODO need to update this)
-	0x05,		// bInterval (5ms can be a bit slower for this interface)
-	
-	// EP1 OUT Endpoint Descriptor
-	0x07,		// bLength
-	0x05,		// BDescriptorType
-	0x01,		// bEndpointAddress (EP1 OUT)
-	0x03,		// bmAttributes (Interrupt Transfer)
-	0x16, 0x00,	// wMaxPacketSize (TODO need to update this)
-	0x05,		// bInterval
-	
-	/*
-	 ****************************************
-	 * KEYBOARD INTERFACE
-	 ****************************************
-	*/
-	
-	// Second Interface Descriptor (Keyboard Interface)
-	0x09,		// bLength
-	0x04,		// bDescriptorType (interface)
-	0x02,		// bInterfaceNumber (Interface 1)
-	0x00,		// bAlternateSetting
-	0x02,		// bNumEndpoints
-	0x03,		// bInterfaceClass (3 HID)
-	0x01,		// bInterfaceSubclass (1 boot)
-	0x01,		// bInterfaceProtocol (1 Keyboard)
-	0x00,		// bInterface
-	
-	// HID Descriptor
-	0x09,		// bLength
-	0x21,		// bDescriptorType (HID)
-	0x10, 0x01,	// bcdHID (V1.1)
-	0x00,		// bCountryCode
-	0x01,		// bNumDescriptors
-	0x22,		// bDescriptorType (Still a report descriptor left)
-	0x41, 0x00,	// bDescriptorLength (47 bytes)
-	
-	// EP1 IN Endpoint Descriptor
-	0x07,		// bLength
-	0x05,		// bDescriptorType (endpoint)
-	0x82,		// bEndpointAddress (EP2 IN)
-	0x03,		// bmAttributes (Interrupt Transfer)
-	0x0C, 0x00,	// wMaxPacketSize
-	0x01,		// bInterval (1mS fast)
-	
-	// EP1 OUT Endpoint Descriptor
-	0x07,		// bLength
-	0x05,		// BDescriptorType
-	0x02,		// bEndpointAddress (EP2 OUT)
-	0x03,		// bmAttributes (Interrupt Transfer)
-	0x02, 0x00,	// wMaxPacketSize
-	0x01		// bInterval (1mS fast)
+  // Config number, interface count, string index, total length, attribute, power in mA
+  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
+
+  // Interface number, string index, protocol, report descriptor len, EP In & Out address, size & polling interval
+  TUD_HID_DESCRIPTOR(ITF_NUM_HID1, 4, HID_PROTOCOL_NONE, sizeof(desc_hid_report1), EPNUM_HID1, CFG_TUD_HID_EP_BUFSIZE, 10),
+  TUD_HID_DESCRIPTOR(ITF_NUM_HID2, 5, HID_PROTOCOL_NONE, sizeof(desc_hid_report2), EPNUM_HID2, CFG_TUD_HID_EP_BUFSIZE, 10)
 };
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
@@ -245,18 +137,14 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 //--------------------------------------------------------------------+
 
 // array of pointer to string descriptors
-/*
-	Make serial something unique so we can try finding it later and replacing it
-	we can also put it in a specific location.
-	Then you can edit that section of the output hex when programming in production
-	You could also read this in from EEPROM
-*/
 char const* string_desc_arr [] =
 {
-  (const char[]) { 0x09, 0x04 },	// 0: is supported language is English (0x0409)
-  "Mechanical Squid Factory",		// 1: Manufacturer
-  "MACRO9PAD",						// 2: Product
-  "123456"			// 3: Serials, should use chip ID
+  (const char[]) { 0x09, 0x04 },  // 0: is supported language is English (0x0409)
+  "TinyUSB",                              // 1: Manufacturer
+  "TinyUSB Device",                 // 2: Product
+  "123456",                                // 3: Serials, should use chip ID
+  "Keyboard Interface",             // 4: Interface 1 String
+  "Mouse Interface",                 // 5: Interface 2 String
 };
 
 static uint16_t _desc_str[32];

@@ -8,6 +8,7 @@
 #include "main.h"
 #include "system_configuration.h"
 #include "tusb.h"
+#include "USBCallbacks.h"
 #include "debug.h"
 #include "interrupt_handlers.h"
 #include "SystemStructures.h"
@@ -39,5 +40,6 @@ int main(void)
 	{
 		__NOP();
 		tud_task();
+		hid_task();
 	}
 }

@@ -7,6 +7,10 @@
 
 #include <sam.h>
 #include <tusb.h>
+#include "SystemStructures.h"
+#include "USBCallbacks.h"
+
+extern struct DeviceInputs InputState;
 
 void USB_Handler(void)
 {
@@ -46,6 +50,7 @@ void tud_resume_cb(void)
 
 void hid_task(void)
 {
+	/*
 	uint8_t wakeup = 0;
 	// Remote wakeup
 	if ( tud_suspended() && wakeup)
@@ -54,10 +59,20 @@ void hid_task(void)
 		// and REMOTE_WAKEUP feature is enabled by host
 		tud_remote_wakeup();
 	}
+	*/
 
 	/*------------- Mouse -------------*/
-	if ( tud_hid_ready() )
+	if ( tud_hid_n_ready(1) )
 	{
+		  {
+			  if ( InputState.Button1 )
+			  {
+				  int8_t const delta = 5;
+
+				  // no button, right + down, no scroll pan
+				  tud_hid_n_mouse_report(1, 0, 0x00, delta, delta, 0, 0);
+			  }
+		  }
 	}
 
 	/*------------- Keyboard -------------*/
