@@ -148,16 +148,19 @@ enum
   ITF_NUM_TOTAL
 };
 
-#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN + TUD_HID_DESC_LEN)
+#define TUD_HID_CONFIG_DESC_LEN (21)
+#define TUD_HID_KEYBOARD_DESC_LEN (63)
+#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_CONFIG_DESC_LEN + TUD_HID_KEYBOARD_DESC_LEN)
 
-#define EPNUM_HID1   0x81
-#define EPNUM_HID2   0x82
+#define EPNUM_CONFIG   0x01
+#define EPNUM_KEYBOARD   0x02
 
 uint8_t const desc_configuration[] =
 {
   // Config number, interface count, string index, total length, attribute, power in mA
   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
 
+	//@TODO FIX THIS TO MATCH NEW REPORT DESCRIPTOR
   // Interface number, string index, protocol, report descriptor len, EP In & Out address, size & polling interval
   TUD_HID_DESCRIPTOR(ITF_HID_CONFIG, 4, HID_PROTOCOL_NONE, sizeof(desc_hid_report1), EPNUM_HID1, CFG_TUD_HID_EP_BUFSIZE, 10),
   TUD_HID_DESCRIPTOR(ITF_NUM_HID2, 5, HID_PROTOCOL_NONE, sizeof(desc_hid_report2), EPNUM_HID2, CFG_TUD_HID_EP_BUFSIZE, 10)
@@ -179,12 +182,12 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 // array of pointer to string descriptors
 char const* string_desc_arr [] =
 {
-  (const char[]) { 0x09, 0x04 },  // 0: is supported language is English (0x0409)
-  "TinyUSB",                              // 1: Manufacturer
-  "TinyUSB Device",                 // 2: Product
-  "123456",                                // 3: Serials, should use chip ID
-  "Keyboard Interface",             // 4: Interface 1 String
-  "Mouse Interface",                 // 5: Interface 2 String
+  (const char[]) { 0x09, 0x04 },	// 0: is supported language is English (0x0409)
+  "Mechanical Squid Factory",		// 1: Manufacturer
+  "Macro9Pad",						// 2: Product
+  "123456",							// 3: Serials, should use chip ID
+  "Configuration Interface",		// 4: Interface 1 String
+  "Keyboard Interface",				// 5: Interface 2 String
 };
 
 static uint16_t _desc_str[32];
