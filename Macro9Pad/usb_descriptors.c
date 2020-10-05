@@ -70,14 +70,54 @@ uint8_t const * tud_descriptor_device_cb(void)
 // HID Report Descriptor
 //--------------------------------------------------------------------+
 
-uint8_t const desc_hid_report1[] =
+uint8_t const desc_config_report[] =
 {
-  TUD_HID_REPORT_DESC_KEYBOARD()
+  0x06, 0x01, 0x00,		// USAGE_PAGE (Generic Desktop)
+  0x09, 0x01,			// USAGE (Vendor Usage 1)
+  0xA1, 0x01,			// COLLECTION (Application)
+  0x15, 0x00			// LOGICAL_MINIMUM (0)
+  0x26, 0xFF, 0x00,		// LOGICAL_MAXIMUM (255)
+  0x75, 0x08,			// REPORT_SIZE (8)
+  0x95, 0x15,			// REPORT_COUNT (21)
+  0x81, 0x00,			// INPUT (Data,Ary,Abs)
+  0x91, 0x00,			// OUTPUT (Data,Ary,Abs)
+  0xC0					// END_COLLECTION
 };
 
-uint8_t desc_hid_report2[] =
+uint8_t desc_keyboard_report[] =
 {
-  TUD_HID_REPORT_DESC_MOUSE()
+  0x05, 0x01,			// USAGE_PAGE (Generic Desktop)
+  0x09, 0x06,			// USAGE (Keyboard)
+  0xA1, 0x01,			// COLLECTION (Application)
+  0x05, 0x07,			// USAGE_PAGE (Keyboard)
+  0x19, 0xE0,			// USAGE_MINIMUM (Keyboard LeftControl)
+  0x29, 0xE7,			// USAGE_MAXIMUM (Keyboard Right GUI)
+  0x15, 0x00,			// LOGICAL_MINIMUM (0)
+  0x25, 0x01,			// LOGICAL_MAXIMUM (1)
+  0x75, 0x01,			// REPORT_SIZE (1)
+  0x95, 0x08,			// REPORT_COUNT (8)
+  0x81, 0x02,			// INPUT (Data,Var,Abs)
+  0x75, 0x08,			// REPORT_SIZE (8)
+  0x95, 0x01,			// REPORT_COUNT (1)
+  0x81, 0x01,			// INPUT (Cnst,Ary,Abs)
+  0x75, 0x01,			// REPORT_SIZE (1)
+  0x95, 0x05,			// REPORT_COUNT (5)
+  0x05, 0x08,			// USAGE_PAGE (LEDS)
+  0x19, 0x01,			// USAGE_MINIMUM (Num Lock)
+  0x29, 0x05,			// USAGE_MAXIMUM (Kana)
+  0x91, 0x02,			// OUTPUT (Data,Var,Abs)
+  0x75, 0x03,			// REPORT_SIZE (3)
+  0x95, 0x01,			// REPORT_COUNT (1)
+  0x91, 0x01,			// OUTPUT (Cnst,Ary,Abs)
+  0x75, 0x08,			// REPORT_SIZE (8)
+  0x95, 0x09,			// REPORT_COUNT (9)
+  0x05, 0x07,			// USAGE_PAGE (Keyboard)
+  0x15, 0x00,			// LOGICAL_MINIMUM (0)
+  0x25, 0x65,			// LOGICAL_MAXIMUM (101)
+  0x19, 0x00,			// USAGE_MINIMUM (Reserved (no event indicated))
+  0x29, 0x65,			// USAGE_MAXIMUM (Keyboard Application)
+  0x81, 0x00,			// INPUT (Data,Ary,Abs)
+  0xC0					// END_COLLECTION
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
@@ -87,11 +127,11 @@ uint8_t const * tud_hid_descriptor_report_cb(uint8_t desc_index)
 {
   if (desc_index == 0)
 	{
-		return desc_hid_report1;
+		return desc_config_report;
 	}
 	else if (desc_index == 1)
 	{
-		return desc_hid_report2;
+		return desc_keyboard_report;
 	}
 
 		return 0;
@@ -103,8 +143,8 @@ uint8_t const * tud_hid_descriptor_report_cb(uint8_t desc_index)
 
 enum
 {
-  ITF_NUM_HID1,
-  ITF_NUM_HID2,
+  ITF_HID_CONFIG,
+  ITF_HID_KEYBOARD,
   ITF_NUM_TOTAL
 };
 
@@ -119,7 +159,7 @@ uint8_t const desc_configuration[] =
   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
 
   // Interface number, string index, protocol, report descriptor len, EP In & Out address, size & polling interval
-  TUD_HID_DESCRIPTOR(ITF_NUM_HID1, 4, HID_PROTOCOL_NONE, sizeof(desc_hid_report1), EPNUM_HID1, CFG_TUD_HID_EP_BUFSIZE, 10),
+  TUD_HID_DESCRIPTOR(ITF_HID_CONFIG, 4, HID_PROTOCOL_NONE, sizeof(desc_hid_report1), EPNUM_HID1, CFG_TUD_HID_EP_BUFSIZE, 10),
   TUD_HID_DESCRIPTOR(ITF_NUM_HID2, 5, HID_PROTOCOL_NONE, sizeof(desc_hid_report2), EPNUM_HID2, CFG_TUD_HID_EP_BUFSIZE, 10)
 };
 
