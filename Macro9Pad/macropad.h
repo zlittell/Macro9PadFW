@@ -15,13 +15,13 @@ struct RGBLED
 	uint8_t Green;
 	uint8_t Blue;
 	uint8_t Brightness;
-};
+}__attribute__((packed));
 
 struct DeviceButton
 {
 	uint8_t Modifier;
 	uint8_t Button;
-};
+}__attribute__((packed));
 
 typedef struct DeviceProfile
 {
@@ -38,7 +38,7 @@ typedef struct DeviceProfile
 	struct DeviceButton Button7;
 	struct DeviceButton Button8;
 	struct DeviceButton Button9;
-}DeviceProfile;
+}__attribute__((packed)) DeviceProfile;
 
 enum KeyboardModifer
 {
@@ -57,7 +57,7 @@ typedef struct MacroPad_KeyboardReport
 	uint8_t modifier;
 	uint8_t reservedByte;
 	uint8_t buttons[9];
-}MacroPad_KeyboardReport;
+}__attribute__((packed)) MacroPad_KeyboardReport;
 
 
 void fillTestProfile(void);
