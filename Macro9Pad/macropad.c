@@ -21,6 +21,11 @@ void ParseProfileMessage(uint8_t *message, uint8_t len)
 
 //read the profile from eeprom
 
+void commandParse(uint8_t *message, uint8_t len)
+{
+	
+}
+
 //This can be deleted in production
 void fillTestProfile(void)
 {
