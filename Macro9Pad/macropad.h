@@ -59,7 +59,28 @@ typedef struct MacroPad_KeyboardReport
 	uint8_t buttons[9];
 }__attribute__((packed)) MacroPad_KeyboardReport;
 
+struct KBStateStructure
+{
+	uint16_t B1 : 1;
+	uint16_t B2 : 1;
+	uint16_t B3 : 1;
+	uint16_t B4 : 1;
+	uint16_t B5 : 1;
+	uint16_t B6 : 1;
+	uint16_t B7 : 1;
+	uint16_t B8 : 1;
+	uint16_t B9 : 1;
+	uint16_t CLEANUP : 1;
+	uint16_t : 6;
+}__attribute__((packed));
+
+union KBStateTrack
+{
+	uint16_t STATE;
+	struct KBStateStructure BITS;
+};
 
 void fillTestProfile(void);
+uint8_t ProcessInputs(MacroPad_KeyboardReport*);
 
 #endif /* MACROPAD_H_ */

@@ -11,9 +11,6 @@
 #include "USBCallbacks.h"
 #include "macropad.h"
 
-extern DeviceInputs InputState;
-extern DeviceProfile MacropadProfile;
-
 void USB_Handler(void)
 {
 	tud_int_handler(0);
@@ -55,27 +52,6 @@ enum
 	KeyboardInterface = 1
 };
 
-struct KBStateStructure
-{
-	uint16_t B1 : 1;
-	uint16_t B2 : 1;
-	uint16_t B3 : 1;
-	uint16_t B4 : 1;
-	uint16_t B5 : 1;
-	uint16_t B6 : 1;
-	uint16_t B7 : 1;
-	uint16_t B8 : 1;
-	uint16_t B9 : 1;
-	uint16_t CLEANUP : 1;
-	uint16_t : 6;
-}__attribute__((packed));
-
-union KBStateTrack
-{
-	uint16_t STATE;
-	struct KBStateStructure BITS;
-};
-
 void hid_task(void)
 {
 	/*
@@ -92,163 +68,18 @@ void hid_task(void)
 	/*------------- Config Interface -------------*/
 	if (tud_hid_n_ready(ConfigInterface))
 	{
+		//Process CMDs
 	}
 
 	/*------------- Keyboard -------------*/
 	if (tud_hid_n_ready(KeyboardInterface))
 	{
-		static union KBStateTrack KBState = {0};
 		MacroPad_KeyboardReport kbReport = {0};
 		
-		/*------------- Button1 -------------*/
-		if (InputState.Button1)
-		{
-			kbReport.modifier |= MacropadProfile.Button1.Modifier;
-			kbReport.buttons[0] = MacropadProfile.Button1.Button;
-			KBState.BITS.B1 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B1)
-			{
-				KBState.BITS.B1 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button2 -------------*/
-		if (InputState.Button2)
-		{
-			kbReport.modifier |= MacropadProfile.Button2.Modifier;
-			kbReport.buttons[1] = MacropadProfile.Button2.Button;
-			KBState.BITS.B2 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B2)
-			{
-				KBState.BITS.B2 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button3 -------------*/
-		if (InputState.Button3)
-		{
-			kbReport.modifier |= MacropadProfile.Button3.Modifier;
-			kbReport.buttons[2] = MacropadProfile.Button3.Button;
-			KBState.BITS.B3 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B3)
-			{
-				KBState.BITS.B3 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button4 -------------*/
-		if (InputState.Button4)
-		{
-			kbReport.modifier |= MacropadProfile.Button4.Modifier;
-			kbReport.buttons[3] = MacropadProfile.Button4.Button;
-			KBState.BITS.B4 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B4)
-			{
-				KBState.BITS.B4 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button5 -------------*/
-		if (InputState.Button5)
-		{
-			kbReport.modifier |= MacropadProfile.Button5.Modifier;
-			kbReport.buttons[4] = MacropadProfile.Button5.Button;
-			KBState.BITS.B5 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B5)
-			{
-				KBState.BITS.B5 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button6 -------------*/
-		if (InputState.Button6)
-		{
-			kbReport.modifier |= MacropadProfile.Button6.Modifier;
-			kbReport.buttons[5] = MacropadProfile.Button6.Button;
-			KBState.BITS.B6 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B6)
-			{
-				KBState.BITS.B6 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button7 -------------*/
-		if (InputState.Button7)
-		{
-			kbReport.modifier |= MacropadProfile.Button7.Modifier;
-			kbReport.buttons[6] = MacropadProfile.Button7.Button;
-			KBState.BITS.B7 = 1;		}
-		else
-		{
-			if(KBState.BITS.B7)
-			{
-				KBState.BITS.B7 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button8 -------------*/
-		if (InputState.Button8)
-		{
-			kbReport.modifier |= MacropadProfile.Button8.Modifier;
-			kbReport.buttons[7] = MacropadProfile.Button8.Button;
-			KBState.BITS.B8 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B8)
-			{
-				KBState.BITS.B8 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		/*------------- Button9 -------------*/
-		if (InputState.Button9)
-		{
-			kbReport.modifier |= MacropadProfile.Button9.Modifier;
-			kbReport.buttons[8] = MacropadProfile.Button9.Button;
-			KBState.BITS.B9 = 1;
-		}
-		else
-		{
-			if(KBState.BITS.B9)
-			{
-				KBState.BITS.B9 = 0;
-				KBState.BITS.CLEANUP = 1;
-			}
-		}
-		
-		if (KBState.STATE)
+		if (ProcessInputs(&kbReport))
 		{
 			tud_hid_n_report(KeyboardInterface, 0, &kbReport, sizeof(kbReport));
 		}
-		
-		KBState.BITS.CLEANUP = 0;
 	}
 }
 
