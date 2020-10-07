@@ -9,12 +9,41 @@
 #include "macropad.h"
 #include "SystemStructures.h"
 
+/*
+ * RGB - 4 (Red, Green, Blue, Brightness)
+ * B1  - 2
+ * B2  - 2
+ * B3  - 2
+ * B4  - 2
+ * B5  - 2
+ * B6  - 2
+ * B7  - 2
+ * B8  - 2
+ * B9  - 2
+ * --------
+ *       22 bytes
+*/
+#define PROFILE_MESSAGE_LENGTH 22
+
 struct DeviceProfile MacropadProfile;
 
 //update a profile
-void ParseProfileMessage(uint8_t *message, uint8_t len)
+uint8_t ParseProfileMessage(uint8_t *message, uint8_t len)
 {
+	if(len == PROFILE_MESSAGE_LENGTH)
+	{
+		uint8_t *aP = &MacropadProfile.profileLED.Red;
+		
+		for (uint8_t i = 0; i < len; i++)
+		{
+			*aP = *message;
+			aP++;
+			message++;
+		}		
+		return len;
+	}
 	
+	return 0;
 }
 
 //save the profile to eeprom

@@ -61,22 +61,18 @@ void hid_task(void)
 	}
 	*/
 
-	/*------------- Mouse -------------*/
+	/*------------- Config Interface -------------*/
 	if ( tud_hid_n_ready(1) )
 	{
 		  {
 			  if ( InputState.Button1 )
 			  {
-				  int8_t const delta = 5;
-
-				  // no button, right + down, no scroll pan
-				  tud_hid_n_mouse_report(1, 0, 0x00, delta, delta, 0, 0);
 			  }
 		  }
 	}
 
 	/*------------- Keyboard -------------*/
-	if ( tud_hid_ready() )
+	if ( tud_hid_n_ready(2) )
 	{
 	}
 }

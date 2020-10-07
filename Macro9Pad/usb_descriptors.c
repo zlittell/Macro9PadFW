@@ -68,7 +68,7 @@ uint8_t const desc_config_report[] =
   0x15, 0x00,			// LOGICAL_MINIMUM (0)
   0x26, 0xFF, 0x00,		// LOGICAL_MAXIMUM (255)
   0x75, 0x08,			// REPORT_SIZE (8)
-  0x95, 0x15,			// REPORT_COUNT (21)
+  0x95, 0x16,			// REPORT_COUNT (22)
   0x81, 0x00,			// INPUT (Data,Ary,Abs)
   0x91, 0x00,			// OUTPUT (Data,Ary,Abs)
   0xC0					// END_COLLECTION

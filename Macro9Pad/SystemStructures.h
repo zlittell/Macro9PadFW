@@ -39,5 +39,11 @@ struct DeviceInput_Debounce
 	uint8_t TestIO2;
 };
 
+struct CommandStatus
+{
+	uint8_t SendProfile : 1;
+	uint8_t SaveProfile : 1;
+};
+
 
 #endif /* SYSTEMSTRUCTURES_H_ */
