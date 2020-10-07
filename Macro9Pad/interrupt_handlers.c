@@ -4,7 +4,7 @@
 
 #define SWITCHDEBOUNCE 5
 
-extern struct DeviceInputs InputState;
+extern DeviceInputs InputState;
 extern struct DeviceInput_Debounce InputDebounceCount;
 
 void Debounce_Handler(void)

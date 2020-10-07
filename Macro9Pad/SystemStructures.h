@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-struct DeviceInputs
+typedef struct DeviceInputs
 {
 	bool Button1;
 	bool Button2;
@@ -22,7 +22,7 @@ struct DeviceInputs
 	bool Button9;
 	bool TestIO1;
 	bool TestIO2 ;
-};
+}DeviceInputs;
 
 struct DeviceInput_Debounce
 {
@@ -44,6 +44,5 @@ struct CommandStatus
 	uint8_t SendProfile : 1;
 	uint8_t SaveProfile : 1;
 };
-
 
 #endif /* SYSTEMSTRUCTURES_H_ */

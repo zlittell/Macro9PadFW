@@ -23,7 +23,7 @@ struct DeviceButton
 	uint8_t Button;
 };
 
-struct DeviceProfile
+typedef struct DeviceProfile
 {
 	struct RGBLED profileLED;
 	//Row1
@@ -38,6 +38,28 @@ struct DeviceProfile
 	struct DeviceButton Button7;
 	struct DeviceButton Button8;
 	struct DeviceButton Button9;
+}DeviceProfile;
+
+enum KeyboardModifer
+{
+	MODIFIER_LEFTCTRL = 1,
+	MODIFIER_LEFTSHIFT = 2,
+	MODIFIER_LEFTALT = 4,
+	MODIFIER_LEFTGUI = 8,
+	MODIFIER_RIGHTCTRL = 16,
+	MODIFIER_RIGHTSHIFT = 32,
+	MODIFIER_RIGHTALT = 64,
+	MODIFIER_RIGHTGUI = 128
 };
+
+typedef struct MacroPad_KeyboardReport
+{
+	uint8_t modifier;
+	uint8_t reservedByte;
+	uint8_t buttons[9];
+}MacroPad_KeyboardReport;
+
+
+void fillTestProfile(void);
 
 #endif /* MACROPAD_H_ */

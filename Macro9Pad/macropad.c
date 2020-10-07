@@ -61,12 +61,12 @@ void fillTestProfile(void)
 	MacropadProfile.profileLED.Red = 0xFF;
 	MacropadProfile.profileLED.Blue = 0xFF;
 	MacropadProfile.profileLED.Brightness = 0xFF;
-	MacropadProfile.Button1.Modifier = 0x02;	//Shift
+	MacropadProfile.Button1.Modifier = MODIFIER_LEFTSHIFT;
 	MacropadProfile.Button1.Button = 0x1d; //z
 	MacropadProfile.Button2.Button = 0x04; //a
 	MacropadProfile.Button3.Button = 0x06; //c
 	MacropadProfile.Button4.Button = 0x0e; //k
-	MacropadProfile.Button5.Modifier = 0x02; //Shift
+	MacropadProfile.Button5.Modifier = MODIFIER_LEFTSHIFT;
 	MacropadProfile.Button5.Button = 0x1e; //1
 	MacropadProfile.Button6.Button = 0x10; //m
 	MacropadProfile.Button7.Button = 0x11; //n

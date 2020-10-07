@@ -14,6 +14,7 @@
 #include "SystemStructures.h"
 #include "MSF_I2C.h"
 #include "NXP_PCA9632.h"
+#include "macropad.h"
 
 int main(void)
 {
@@ -21,6 +22,7 @@ int main(void)
 	SystemInit();
 	
 	//debugEnableClockOutputs();
+	fillTestProfile();
 	
 	configureClocks();
 	init_IO();
