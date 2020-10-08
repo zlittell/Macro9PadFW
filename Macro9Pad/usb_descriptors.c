@@ -113,7 +113,7 @@ uint8_t desc_keyboard_report[] =
 // Invoked when received GET HID REPORT DESCRIPTOR
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
-uint8_t const * tud_hid_descriptor_report_cb(uint8_t desc_index)
+uint8_t const * tud_hid_n_descriptor_report_cb(uint8_t desc_index)
 {
 	if (desc_index == 0)
 	{

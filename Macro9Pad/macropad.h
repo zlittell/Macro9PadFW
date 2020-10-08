@@ -9,6 +9,29 @@
 #ifndef MACROPAD_H_
 #define MACROPAD_H_
 
+/*
+ * RGB - 4 (Red, Green, Blue, Brightness)
+ * B1  - 2
+ * B2  - 2
+ * B3  - 2
+ * B4  - 2
+ * B5  - 2
+ * B6  - 2
+ * B7  - 2
+ * B8  - 2
+ * B9  - 2
+ * --------
+ *       22 bytes
+*/
+#define PROFILE_MESSAGE_LENGTH 22
+
+enum Commands
+{
+	CMD_ReceiveProfile = 0xA0,
+	CMD_SendProfile = 0xB0,
+	CMD_SaveProfile
+};
+
 struct RGBLED
 {
 	uint8_t Red;
@@ -80,7 +103,18 @@ union KBStateTrack
 	struct KBStateStructure BITS;
 };
 
+#define COMMANDBUFFERSIZE 10
+struct CommandBufferStruct
+{
+	uint8_t buffer[COMMANDBUFFERSIZE];
+	uint8_t wP;
+	uint8_t rP;
+};
+
 void fillTestProfile(void);
 uint8_t ProcessInputs(MacroPad_KeyboardReport*);
+void CommandParse(const uint8_t*, const uint8_t);
+uint8_t CommandBufferProcess(void);
+void CopyProfileToBuffer(uint8_t*);
 
 #endif /* MACROPAD_H_ */

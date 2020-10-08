@@ -10,32 +10,16 @@
 #include "SystemStructures.h"
 
 extern DeviceInputs InputState;
-extern DeviceProfile MacropadProfile;
-
-/*
- * RGB - 4 (Red, Green, Blue, Brightness)
- * B1  - 2
- * B2  - 2
- * B3  - 2
- * B4  - 2
- * B5  - 2
- * B6  - 2
- * B7  - 2
- * B8  - 2
- * B9  - 2
- * --------
- *       22 bytes
-*/
-#define PROFILE_MESSAGE_LENGTH 22
-
 struct DeviceProfile MacropadProfile;
+struct CommandBufferStruct CMDBuffer;
 
 //update a profile
-uint8_t ParseProfileMessage(uint8_t *message, uint8_t len)
+uint8_t ParseProfileMessage(uint8_t const *message, uint8_t const len)
 {
 	if(len == PROFILE_MESSAGE_LENGTH)
 	{
 		uint8_t *aP = &MacropadProfile.profileLED.Red;
+		message++;	// move past CMD byte
 		
 		for (uint8_t i = 0; i < len; i++)
 		{
@@ -49,13 +33,74 @@ uint8_t ParseProfileMessage(uint8_t *message, uint8_t len)
 	return 0;
 }
 
-//save the profile to eeprom
-
-//read the profile from eeprom
-
-void commandParse(uint8_t *message, uint8_t len)
+void CopyProfileToBuffer(uint8_t *buffer)
 {
+	uint8_t *aP = &MacropadProfile.profileLED.Red;
+	*buffer = CMD_SendProfile;
+	buffer++;
 	
+	for(uint8_t i = 0; i < PROFILE_MESSAGE_LENGTH; i++)
+	{
+		*buffer = *aP;
+		aP++;
+		buffer++;
+	}
+}
+
+void EEPROMSaveProfile(void)
+{
+	// @todo save to eeprom
+}
+
+void EEPROMReadProfile(void)
+{
+	// @todo read from eeprom
+}
+
+void CommandBufferAdd(uint8_t command)
+{
+	CMDBuffer.buffer[CMDBuffer.wP] = command;
+	
+	if(CMDBuffer.wP >= (COMMANDBUFFERSIZE-1)){CMDBuffer.wP = 0;}
+	else {CMDBuffer.wP++;}
+}
+
+uint8_t CommandBufferProcess(void)
+{
+	if(CMDBuffer.rP != CMDBuffer.wP)
+	{
+		uint8_t readCommand = CMDBuffer.buffer[CMDBuffer.rP];
+		
+		if(CMDBuffer.rP >= (COMMANDBUFFERSIZE-1)){CMDBuffer.rP = 0;}
+		else {CMDBuffer.rP++;}
+		
+		return readCommand;
+	}
+	
+	return 0;
+}
+
+void CommandParse(uint8_t const *message, uint8_t const len)
+{
+	switch(*message)
+	{
+		case (CMD_ReceiveProfile):
+		{
+			ParseProfileMessage(message, len);
+			break;
+		}
+		case (CMD_SendProfile):
+		{
+			//GlobalCommandFlags.bits.CMDFLAG_SendProfile = 1;
+			CommandBufferAdd(*message);
+			break;
+		}
+		case (CMD_SaveProfile):
+		{
+			EEPROMSaveProfile();
+			break;
+		}
+	}
 }
 
 uint8_t ProcessInputs(MacroPad_KeyboardReport *report)
