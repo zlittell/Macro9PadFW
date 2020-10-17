@@ -6,8 +6,6 @@ struct DeviceInput_Debounce InputDebounceCount = {0};
 
 void configureClocks(void)
 {
-    NVMCTRL->CTRLB.reg |=  NVMCTRL_CTRLB_RWS(0);
-    
     //_pm_init
     PM->CPUSEL.reg = PM_CPUSEL_CPUDIV_DIV1;
     PM->APBASEL.reg = PM_APBASEL_APBADIV_DIV1;
@@ -43,8 +41,8 @@ void configureClocks(void)
 	GCLK->GENCTRL.reg = (GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC32K | GCLK_GENCTRL_ID(3));
     
     //init pins
-    PM->APBBMASK.reg |= PM_APBBMASK_USB;
-    PM->AHBMASK.reg |= PM_AHBMASK_USB;
+    PM->APBBMASK.reg |= (PM_APBBMASK_USB | PM_APBBMASK_NVMCTRL);
+    PM->AHBMASK.reg |= (PM_AHBMASK_USB | PM_AHBMASK_NVMCTRL);
     GCLK->CLKCTRL.reg = (USB_GCLK_ID | GCLK_CLKCTRL_GEN_GCLK1 | GCLK_CLKCTRL_CLKEN);
     
     // USB Pin Init
@@ -58,6 +56,12 @@ void configureClocks(void)
 
     //Pins 24/25 is group 12 and USB is function G
     PORT->Group[0].PMUX[12].reg = (PORT_PMUX_PMUXO_G | PORT_PMUX_PMUXE_G);   
+}
+
+void init_NVM(void)
+{
+	
+	
 }
 
 void init_TC2(void)

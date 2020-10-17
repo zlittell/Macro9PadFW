@@ -195,6 +195,12 @@
     <Compile Include="Device_Startup\system_samd11.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Drivers\NVM_EEPROM.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\NVM_EEPROM.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Drivers\NXP_PCA9632.c">
       <SubType>compile</SubType>
     </Compile>
