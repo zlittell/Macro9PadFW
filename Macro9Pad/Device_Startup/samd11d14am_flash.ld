@@ -32,10 +32,16 @@ OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 SEARCH_DIR(.)
 
-/* Memory Spaces Definitions */
+/* 
+ * Memory Spaces Definitions
+ * Reserve space for bootloader
+ * Reserve space for flash used as eeprom storage
+*/
 MEMORY
 {
-  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00004000
+  boot     (r)   : ORIGIN = 0x00000000, LENGTH = 0x00000000
+  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00003F00
+  eep	   (rw)	 : ORIGIN = 0x00003F00, LENGTH = 0x00000100
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00001000
 }
 
@@ -45,6 +51,12 @@ STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stac
 /* Section Definitions */
 SECTIONS
 {
+	/* eeprom sim area */
+	.eepromBlock :
+	{
+		KEEP(*(.deviceProfileSection)) /* keep my profile even if not referenced */
+	} > eep
+
     .text :
     {
         . = ALIGN(4);
