@@ -12,9 +12,9 @@
 // this is a sample profile programmed initially
 uint8_t __attribute__ ((section (".deviceProfileSection"))) initProfile[22] = 
 {
-	0xFF,	// RGB RED
-	0x00,	// RGB Green
-	0xFF,	// RGB Blue
+	0x11,	// RGB RED
+	0x22,	// RGB Green
+	0x33,	// RGB Blue
 	0xFF,	// RGB Brightness
 	0x02,	// Button1 LShift
 	0x1d,	// Button1 z

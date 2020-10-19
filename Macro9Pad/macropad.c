@@ -7,7 +7,14 @@
 
 #include <stdint.h>
 #include "macropad.h"
+#include "NVM_EEPROM.h"
 #include "SystemStructures.h"
+
+#define PROFILEADDR (LTS_ROW|MEM_PAGE0)
+#define DATA_FIRSTVALUE_POS 24
+#define DATA_SECONDVALUE_POS 16
+#define DATA_THIRDVALUE_POS  8
+#define DATA_SHIFTEDMASK 0xFF
 
 extern DeviceInputs InputState;
 struct DeviceProfile MacropadProfile;
@@ -47,14 +54,87 @@ void CopyProfileToBuffer(uint8_t *buffer)
 	}
 }
 
-void EEPROMSaveProfile(void)
+void SaveProfile(void)
 {
 	// @todo save to eeprom
+	uint32_t data[16] = {0xFFFFFFFF};
+		
+	data[0] = 
+		((MacropadProfile.profileLED.Red)|
+		(MacropadProfile.profileLED.Green<<DATA_THIRDVALUE_POS)|
+		(MacropadProfile.profileLED.Blue<<DATA_SECONDVALUE_POS)|
+		(MacropadProfile.profileLED.Brightness<<DATA_FIRSTVALUE_POS));
+		
+	data[1] = 
+		((MacropadProfile.Button1.Modifier)|
+		(MacropadProfile.Button1.Button<<DATA_THIRDVALUE_POS)|
+		(MacropadProfile.Button2.Modifier<<DATA_SECONDVALUE_POS)|
+		(MacropadProfile.Button2.Button<<DATA_FIRSTVALUE_POS));
+	
+	data[2] =
+		((MacropadProfile.Button3.Modifier)|
+		(MacropadProfile.Button3.Button<<DATA_THIRDVALUE_POS)|
+		(MacropadProfile.Button4.Modifier<<DATA_SECONDVALUE_POS)|
+		(MacropadProfile.Button4.Button<<DATA_FIRSTVALUE_POS));
+		
+	data[3] =
+		((MacropadProfile.Button5.Modifier)|
+		(MacropadProfile.Button5.Button<<DATA_THIRDVALUE_POS)|
+		(MacropadProfile.Button6.Modifier<<DATA_SECONDVALUE_POS)|
+		(MacropadProfile.Button6.Button<<DATA_FIRSTVALUE_POS));
+		
+	data[4] =
+		((MacropadProfile.Button7.Modifier)|
+		(MacropadProfile.Button7.Button<<DATA_THIRDVALUE_POS)|
+		(MacropadProfile.Button8.Modifier<<DATA_SECONDVALUE_POS)|
+		(MacropadProfile.Button8.Button<<DATA_FIRSTVALUE_POS));
+	
+	data[5] =
+		((MacropadProfile.Button9.Modifier)|
+		(MacropadProfile.Button9.Button<<DATA_THIRDVALUE_POS)|
+		(0xFFFF0000));
+		
+	eeprom_page_write(PROFILEADDR, data);
 }
 
-void EEPROMReadProfile(void)
+void LoadProfile(void)
 {
-	// @todo read from eeprom
+	uint32_t data[16] = {0};
+	eeprom_page_read(PROFILEADDR, data);
+	
+	// 1st 32bits
+	MacropadProfile.profileLED.Red = ((uint8_t)(data[0]&DATA_SHIFTEDMASK));
+	MacropadProfile.profileLED.Green = ((uint8_t)((data[0]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.profileLED.Blue = ((uint8_t)((data[0]>>DATA_SECONDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.profileLED.Brightness = ((uint8_t)(data[0]>>DATA_FIRSTVALUE_POS));
+	
+	// 2nd 32bits
+	MacropadProfile.Button1.Modifier = ((uint8_t)(data[1]&DATA_SHIFTEDMASK));
+	MacropadProfile.Button1.Button = ((uint8_t)((data[1]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button2.Modifier = ((uint8_t)((data[1]>>DATA_SECONDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button2.Button = ((uint8_t)(data[1]>>DATA_FIRSTVALUE_POS));
+	
+	// 3rd 32bits
+	MacropadProfile.Button3.Modifier = ((uint8_t)(data[2]&DATA_SHIFTEDMASK));
+	MacropadProfile.Button3.Button = ((uint8_t)((data[2]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button4.Modifier = ((uint8_t)((data[2]>>DATA_SECONDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button4.Button = ((uint8_t)(data[2]>>DATA_FIRSTVALUE_POS));
+	
+	// 4th 32bits
+	MacropadProfile.Button5.Modifier = ((uint8_t)(data[3]&DATA_SHIFTEDMASK));
+	MacropadProfile.Button5.Button = ((uint8_t)((data[3]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button6.Modifier = ((uint8_t)((data[3]>>DATA_SECONDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button6.Button = ((uint8_t)(data[3]>>DATA_FIRSTVALUE_POS));
+	
+	// 5th 32bits
+	MacropadProfile.Button7.Modifier = ((uint8_t)(data[4]&DATA_SHIFTEDMASK));
+	MacropadProfile.Button7.Button = ((uint8_t)((data[4]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button8.Modifier = ((uint8_t)((data[4]>>DATA_SECONDVALUE_POS)&DATA_SHIFTEDMASK));
+	MacropadProfile.Button8.Button = ((uint8_t)(data[4]>>DATA_FIRSTVALUE_POS));
+	
+	// 6th 32bits
+	MacropadProfile.Button9.Modifier = ((uint8_t)(data[5]&DATA_SHIFTEDMASK));
+	MacropadProfile.Button9.Button = ((uint8_t)((data[5]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
 }
 
 void CommandBufferAdd(uint8_t command)
@@ -97,7 +177,7 @@ void CommandParse(uint8_t const *message, uint8_t const len)
 		}
 		case (CMD_SaveProfile):
 		{
-			EEPROMSaveProfile();
+			SaveProfile();
 			break;
 		}
 	}
@@ -257,22 +337,23 @@ uint8_t ProcessInputs(MacroPad_KeyboardReport *report)
 	else {return 0;}
 }
 
-//This can be deleted in production
-void fillTestProfile(void)
+void test(void)
 {
-	MacropadProfile.profileLED.Red = 0xFF;
-	MacropadProfile.profileLED.Blue = 0xFF;
-	MacropadProfile.profileLED.Brightness = 0xFF;
-	MacropadProfile.Button1.Modifier = MODIFIER_LEFTSHIFT;
-	MacropadProfile.Button1.Button = 0x1d; //z
-	MacropadProfile.Button2.Button = 0x04; //a
-	MacropadProfile.Button3.Button = 0x06; //c
-	MacropadProfile.Button4.Button = 0x0e; //k
-	MacropadProfile.Button5.Modifier = MODIFIER_LEFTSHIFT;
-	MacropadProfile.Button5.Button = 0x1e; //1
-	MacropadProfile.Button6.Button = 0x10; //m
-	MacropadProfile.Button7.Button = 0x11; //n
-	MacropadProfile.Button8.Button = 0x12; //o
-	MacropadProfile.Button9.Button = 0x13; //p
+	if(MacropadProfile.Button1.Button!=0x1e)
+	{
+		MacropadProfile.Button1.Button = 0x1e;
+		MacropadProfile.Button2.Button = 0x10;
+		MacropadProfile.Button3.Button = 0x11;
+		MacropadProfile.Button4.Button = 0x12;
+		MacropadProfile.Button5.Button = 0x13;
+		MacropadProfile.Button6.Button = 0x1d;
+		MacropadProfile.Button7.Button = 0x04;
+		MacropadProfile.Button8.Button = 0x06;
+		MacropadProfile.Button9.Button = 0x0e;
+		SaveProfile();
+	}
+	else
+	{
+		MacropadProfile.Button2.Button=MacropadProfile.Button2.Button+1;
+	}
 }
-

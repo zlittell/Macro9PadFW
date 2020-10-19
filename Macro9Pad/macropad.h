@@ -116,5 +116,8 @@ uint8_t ProcessInputs(MacroPad_KeyboardReport*);
 void CommandParse(const uint8_t*, const uint8_t);
 uint8_t CommandBufferProcess(void);
 void CopyProfileToBuffer(uint8_t*);
+void SaveProfile(void);
+void LoadProfile(void);
+void test(void);
 
 #endif /* MACROPAD_H_ */

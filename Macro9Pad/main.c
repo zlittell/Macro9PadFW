@@ -15,10 +15,9 @@
 #include "MSF_I2C.h"
 #include "NXP_PCA9632.h"
 #include "macropad.h"
-#include "NVM_EEPROM.h"
 
+/*
 uint32_t eepromData[16] = {0};
-
 void testEEPROM(void)
 {
 	eeprom_page_read(LTS_ROW|MEM_PAGE0, eepromData);
@@ -27,7 +26,7 @@ void testEEPROM(void)
 	eepromData[0] = 0x11;
 	eeprom_page_read(LTS_ROW|MEM_PAGE0, eepromData);
 }
-
+*/
 int main(void)
 {
 	/* Initialize the SAM system */
@@ -37,8 +36,9 @@ int main(void)
 	NVMCTRL->CTRLB.reg = (NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW | NVMCTRL_CTRLB_RWS(0));
 	
 	//debugEnableClockOutputs();
-	fillTestProfile();
-	testEEPROM();
+	LoadProfile();
+	//testEEPROM();
+	test();
 	
 	configureClocks();
 	init_IO();
