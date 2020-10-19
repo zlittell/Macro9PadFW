@@ -94,6 +94,7 @@ void SaveProfile(void)
 		(MacropadProfile.Button9.Button<<DATA_THIRDVALUE_POS)|
 		(0xFFFF0000));
 		
+	eeprom_row_erase(PROFILEADDR);
 	eeprom_page_write(PROFILEADDR, data);
 }
 
@@ -354,6 +355,7 @@ void test(void)
 	}
 	else
 	{
-		MacropadProfile.Button2.Button=MacropadProfile.Button2.Button+1;
+		MacropadProfile.Button2.Button++;
+		SaveProfile();
 	}
 }
