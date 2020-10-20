@@ -25,8 +25,7 @@ int main(void)
 	NVMCTRL->CTRLB.reg = (NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW | NVMCTRL_CTRLB_RWS(0));
 	
 	//debugEnableClockOutputs();
-	LoadProfile();
-	SaveProfile();
+
 	
 	configureClocks();
 	init_IO();
@@ -35,11 +34,11 @@ int main(void)
 
 	enable_interrupts();
 	
-	tusb_init();
-	
 	LED_init();
-	LED_updateRed(0xFF);
-	LED_updateBrightness(0x10);
+	LoadProfile();
+	SaveProfile();
+	
+	tusb_init();
 
 	/* Replace with your application code */
 	while (1)

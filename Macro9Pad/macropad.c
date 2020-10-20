@@ -9,6 +9,7 @@
 #include "macropad.h"
 #include "NVM_EEPROM.h"
 #include "SystemStructures.h"
+#include "NXP_PCA9632.h"
 
 #define PROFILEADDR (LTS_ROW|MEM_PAGE0)
 #define DATA_FIRSTVALUE_POS 24
@@ -171,6 +172,9 @@ void LoadProfile(void)
 	MacropadProfile.Button9.Modifier = ((uint8_t)(profileMemory[arrayCursor]&DATA_SHIFTEDMASK));
 	MacropadProfile.Button9.Button = ((uint8_t)((profileMemory[arrayCursor]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
 	memoryWriteCount = ((profileMemory[arrayCursor] >> DATA_FIRSTVALUE_POS)|((profileMemory[arrayCursor] >> DATA_THIRDVALUE_POS)&0xFF00));
+	
+	LED_updateRGB(MacropadProfile.profileLED.Blue, MacropadProfile.profileLED.Green, MacropadProfile.profileLED.Red);
+	LED_updateBrightness(MacropadProfile.profileLED.Brightness);
 }
 
 void CommandBufferAdd(uint8_t command)
