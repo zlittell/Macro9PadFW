@@ -16,17 +16,6 @@
 #include "NXP_PCA9632.h"
 #include "macropad.h"
 
-/*
-uint32_t eepromData[16] = {0};
-void testEEPROM(void)
-{
-	eeprom_page_read(LTS_ROW|MEM_PAGE0, eepromData);
-	eepromData[0] = 0xEE;
-	eeprom_page_write(LTS_ROW|MEM_PAGE0, eepromData);
-	eepromData[0] = 0x11;
-	eeprom_page_read(LTS_ROW|MEM_PAGE0, eepromData);
-}
-*/
 int main(void)
 {
 	/* Initialize the SAM system */
@@ -37,8 +26,7 @@ int main(void)
 	
 	//debugEnableClockOutputs();
 	LoadProfile();
-	//testEEPROM();
-	test();
+	SaveProfile();
 	
 	configureClocks();
 	init_IO();
