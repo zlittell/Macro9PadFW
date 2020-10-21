@@ -7,7 +7,6 @@
 
 #include <sam.h>
 #include <tusb.h>
-#include "SystemStructures.h"
 #include "USBCallbacks.h"
 #include "macropad.h"
 

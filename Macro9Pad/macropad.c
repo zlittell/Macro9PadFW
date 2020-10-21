@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include "macropad.h"
 #include "NVM_EEPROM.h"
-#include "SystemStructures.h"
 #include "NXP_PCA9632.h"
 
 #define PROFILEADDR (LTS_ROW|MEM_PAGE0)
@@ -17,7 +16,8 @@
 #define DATA_THIRDVALUE_POS  8
 #define DATA_SHIFTEDMASK 0xFF
 
-extern DeviceInputs InputState;
+struct DeviceInputs InputState = {0};
+
 struct DeviceProfile MacropadProfile;
 struct CommandBufferStruct CMDBuffer;
 uint32_t profileMemory[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

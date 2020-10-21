@@ -9,6 +9,8 @@
 #ifndef MACROPAD_H_
 #define MACROPAD_H_
 
+#include <stdbool.h>
+
 /*
  * RGB - 4 (Red, Green, Blue, Brightness)
  * B1  - 2
@@ -24,6 +26,42 @@
  *       22 bytes
 */
 #define PROFILE_MESSAGE_LENGTH 22
+
+typedef struct DeviceInputs
+{
+	bool Button1;
+	bool Button2;
+	bool Button3;
+	bool Button4;
+	bool Button5;
+	bool Button6;
+	bool Button7;
+	bool Button8;
+	bool Button9;
+	bool TestIO1;
+	bool TestIO2 ;
+}DeviceInputs;
+
+struct DeviceInput_Debounce
+{
+	uint8_t Button1;
+	uint8_t Button2;
+	uint8_t Button3;
+	uint8_t Button4;
+	uint8_t Button5;
+	uint8_t Button6;
+	uint8_t Button7;
+	uint8_t Button8;
+	uint8_t Button9;
+	uint8_t TestIO1;
+	uint8_t TestIO2;
+};
+
+struct CommandStatus
+{
+	uint8_t SendProfile : 1;
+	uint8_t SaveProfile : 1;
+};
 
 enum Commands
 {

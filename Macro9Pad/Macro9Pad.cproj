@@ -183,16 +183,19 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="debug.c">
+    <Compile Include="debounce.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="debug.h">
+    <Compile Include="debounce.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\system_samd11.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\MSF_I2C.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Drivers\NVM_EEPROM.c">
@@ -205,12 +208,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Drivers\NXP_PCA9632.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="interrupt_handlers.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="interrupt_handlers.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="macropad.c">
@@ -229,17 +226,10 @@
       <SubType>compile</SubType>
       <Link>Drivers\MSF_I2C.c</Link>
     </Compile>
-    <Compile Include="MSF_I2C\MSF_I2C_SAMD11.C">
-      <SubType>compile</SubType>
-      <Link>Drivers\MSF_I2C_SAMD11.C</Link>
-    </Compile>
-    <Compile Include="SystemStructures.h">
+    <Compile Include="init_samd11.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="system_configuration.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="system_configuration.h">
+    <Compile Include="init_samd11.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="tinyusb\hw\mcu\microchip\samd11\hal\src\hal_atomic.c">
