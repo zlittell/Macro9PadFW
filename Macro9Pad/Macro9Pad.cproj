@@ -144,7 +144,6 @@
       <Value>../tinyusb/hw/mcu/microchip/samd11/hpl/port</Value>
       <Value>../tinyusb/hw/mcu/microchip/samd11/hri</Value>
       <Value>../tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include</Value>
-      <Value>../MSF_I2C</Value>
       <Value>../Drivers</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
@@ -183,32 +182,35 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="debounce.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="debounce.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Device_Startup\startup_samd11.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\system_samd11.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\MSF_I2C.h">
+    <Compile Include="Drivers\MSF_I2C\MSF_I2C.h">
       <SubType>compile</SubType>
+      <Link>Drivers\MSF_I2C.h</Link>
     </Compile>
-    <Compile Include="Drivers\NVM_EEPROM.c">
+    <Compile Include="Drivers\MSF_I2C\MSF_SAMD11_I2C.c">
       <SubType>compile</SubType>
+      <Link>Drivers\MSF_SAMD11_I2C.c</Link>
     </Compile>
-    <Compile Include="Drivers\NVM_EEPROM.h">
+    <Compile Include="Drivers\MSF_NVM_FLASH\MSF_NVM_FLASH.h">
       <SubType>compile</SubType>
+      <Link>Drivers\MSF_NVM_FLASH.h</Link>
     </Compile>
-    <Compile Include="Drivers\NXP_PCA9632.c">
+    <Compile Include="Drivers\MSF_NVM_FLASH\MSF_NVM_FLASH_SAMD11.c">
       <SubType>compile</SubType>
+      <Link>Drivers\MSF_NVM_FLASH_SAMD11.c</Link>
     </Compile>
-    <Compile Include="Drivers\NXP_PCA9632.h">
+    <Compile Include="Drivers\MSF_RGB\MSF_RGB.h">
       <SubType>compile</SubType>
+      <Link>Drivers\MSF_RGB.h</Link>
+    </Compile>
+    <Compile Include="Drivers\MSF_RGB\MSF_RGB_PCA9632.c">
+      <SubType>compile</SubType>
+      <Link>Drivers\MSF_RGB_PCA9632.c</Link>
     </Compile>
     <Compile Include="macropad.c">
       <SubType>compile</SubType>
@@ -222,14 +224,10 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="MSF_I2C\MSF_I2C.c">
-      <SubType>compile</SubType>
-      <Link>Drivers\MSF_I2C.c</Link>
-    </Compile>
-    <Compile Include="init_samd11.c">
+    <Compile Include="sys_samd11.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="init_samd11.h">
+    <Compile Include="sys_samd11.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="tinyusb\hw\mcu\microchip\samd11\hal\src\hal_atomic.c">

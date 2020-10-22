@@ -1,3 +1,12 @@
 [submodule "Macro9Pad/tinyusb"]
 	path = Macro9Pad/tinyusb
 	url = https://github.com/hathach/tinyusb.git
+[submodule "Macro9Pad/Drivers/MSF_I2C"]
+	path = Macro9Pad/Drivers/MSF_I2C
+	url = https://github.com/zlittell/MSF_I2C.git
+[submodule "Macro9Pad/Drivers/MSF_NVM_FLASH"]
+	path = Macro9Pad/Drivers/MSF_NVM_FLASH
+	url = https://github.com/zlittell/MSF_NVM_FLASH.git
+[submodule "Macro9Pad/Drivers/MSF_RGB"]
+	path = Macro9Pad/Drivers/MSF_RGB
+	url = https://github.com/zlittell/MSF_RGB.git

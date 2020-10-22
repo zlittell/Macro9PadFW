@@ -1,5 +1,5 @@
 /**
-* @file Macro9Pad.c
+* @file main.c
 * @brief Main application code.
 * @author Zack Littell
 * @company Mechanical Squid Factory
@@ -7,13 +7,12 @@
 */
 #include "sam.h"
 #include "main.h"
-#include "init_samd11.h"
+#include "sys_samd11.h"
 #include "tusb.h"
 #include "USBCallbacks.h"
-#include "MSF_I2C.h"
-#include "NXP_PCA9632.h"
+#include "MSF_I2C/MSF_I2C.h"
+#include "MSF_RGB/MSF_RGB.h"
 #include "macropad.h"
-
 
 /**
 	@brief Application Main
@@ -33,7 +32,7 @@ int main(void)
 	init_Memory();
 	
 	// System Startup
-	LED_init();
+	LED_init(LEDADDR);
 	LoadProfile();
 	enable_interrupts();
 	tusb_init();

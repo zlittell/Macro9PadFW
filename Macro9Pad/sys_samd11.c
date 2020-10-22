@@ -1,13 +1,28 @@
-/*
- * samd11.c
- *
- * Created: 10/21/2020 3:15:04 PM
- *  Author: zlitt
- */ 
+/**
+* @file sys_samd11.c
+* @brief SAMD11 Specific Code
+* @author Zack Littell
+* @company Mechanical Squid Factory
+* @project Macro9Pad
+*/
 
 #include "sam.h"
-#include "debounce.h"
+#include "tusb.h"
+#include "macropad.h"
 
+/**
+	@brief USB Handler
+	@details USB Interrupt Callback from SAMD11
+*/
+void USB_Handler(void)
+{
+	tud_int_handler(0);
+}
+
+/**
+	@brief Configure System Clocks
+	@details Configures clocks for a SAMD11
+*/
 void configureClocks(void)
 {
 	//_pm_init
@@ -50,11 +65,19 @@ void configureClocks(void)
 	GCLK->CLKCTRL.reg = (USB_GCLK_ID | GCLK_CLKCTRL_GEN_GCLK1 | GCLK_CLKCTRL_CLKEN);
 }
 
+/**
+	@brief Initialize Memory
+	@details Initializes NVM Flash for storage
+*/
 void init_Memory(void)
 {
 	NVMCTRL->CTRLB.reg = (NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW | NVMCTRL_CTRLB_RWS(0));
 }
 
+/**
+	@brief Initialize TC2
+	@details Initialize timer2 for for a ~1mS interrupts
+*/
 void init_TC2(void)
 {
 	//Enable TC2 Bus Clock
@@ -76,6 +99,10 @@ void init_TC2(void)
 	TC_CTRLA_MODE_COUNT16 | TC_CTRLA_ENABLE);
 }
 
+/**
+	@brief Initialize IO
+	@details Initialize IO for SAMD11 System
+*/
 void init_IO(void)
 {
 	//Button1 - PA23
@@ -159,4 +186,76 @@ void enable_interrupts(void)
 {
 	NVIC_EnableIRQ(TC2_IRQn);
 	NVIC_EnableIRQ(USB_IRQn);
+}
+
+/**
+	@brief Gets a Button
+	@details Gets the status of an input
+	@param[in] Number of button to get state
+	@returns Value of input
+*/
+uint8_t GetButton(uint8_t buttonToGet)
+{
+	switch (buttonToGet)
+	{
+		//Button1 - PA23
+		case (1):
+		{
+			return (PORT->Group[0].IN.reg & PORT_PA23);
+		}
+		//Button2 - PA02
+		case (2):
+		{
+			return (PORT->Group[0].IN.reg & PORT_PA02);
+		}
+		//Button3 - PA03
+		case (3):
+		{
+			return (PORT->Group[0].IN.reg & PORT_PA03);
+		}
+		//Button4 - PA11
+		case (4):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA11);
+		}
+		//Button5 - PA06
+		case (5):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA06);
+		}
+		//Button6 - PA04
+		case (6):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA04);
+		}
+		//Button7 - PA10
+		case (7):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA10);
+		}
+		//Button8 - PA07
+		case (8):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA07);
+		}
+		//Button9 - PA05
+		case (9):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA05);
+		}
+		//TestIO1 - PA17
+		case (10):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA17);
+		}
+		//TestIO2 - PA16
+		case (11):
+		{
+			return(PORT->Group[0].IN.reg & PORT_PA16);
+		}
+		default:
+		{
+			return 0;
+		}
+	}
 }

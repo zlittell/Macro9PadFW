@@ -1,29 +1,243 @@
-/*
- * macropad.c
- *
- * Created: 9/24/2020 3:09:56 PM
- *  Author: zlitt
- */ 
+/**
+* @file Macro9Pad.c
+* @brief Macropad Interface Logic
+* @author Zack Littell
+* @company Mechanical Squid Factory
+* @project Macro9Pad
+*/
 
 #include <stdint.h>
+#include "sys_samd11.h"
 #include "macropad.h"
-#include "NVM_EEPROM.h"
-#include "NXP_PCA9632.h"
+#include "MSF_NVM_FLASH/MSF_NVM_FLASH.h"
+#include "MSF_RGB/MSF_RGB.h"
 
-#define PROFILEADDR (LTS_ROW|MEM_PAGE0)
+#define PROFILEADDR (0x3F00)
 #define DATA_FIRSTVALUE_POS 24
 #define DATA_SECONDVALUE_POS 16
 #define DATA_THIRDVALUE_POS  8
 #define DATA_SHIFTEDMASK 0xFF
+#define SWITCHDEBOUNCE 5
 
 struct DeviceInputs InputState = {0};
-
 struct DeviceProfile MacropadProfile;
 struct CommandBufferStruct CMDBuffer;
 uint32_t profileMemory[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t memoryWriteCount = 0;
 
-//update a profile
+/**
+*	@brief Handle button debounce.
+*	@details Call on timer interrupt to process inputs while preventing bounce.
+*/
+void Debounce_Handler(void)
+{
+	static struct DeviceInput_Debounce InputDebounceCount = {0};
+	
+	if(GetButton(1))
+	{
+		if (InputDebounceCount.Button1 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button1 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button1++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button1 = 0;
+		InputState.Button1 = false;
+	}
+	
+	
+	if(GetButton(2))
+	{
+		if (InputDebounceCount.Button2 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button2 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button2++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button2 = 0;
+		InputState.Button2 = false;
+	}
+	
+	
+	if(GetButton(3))
+	{
+		if (InputDebounceCount.Button3 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button3 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button3++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button3 = 0;
+		InputState.Button3 = false;
+	}
+	
+	
+	if(GetButton(4))
+	{
+		if (InputDebounceCount.Button4 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button4 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button4++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button4 = 0;
+		InputState.Button4 = false;
+	}
+	
+	
+	if(GetButton(5))
+	{
+		if (InputDebounceCount.Button5 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button5 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button5++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button5 = 0;
+		InputState.Button5 = false;
+	}
+	
+	
+	if(GetButton(6))
+	{
+		if (InputDebounceCount.Button6 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button6 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button6++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button6 = 0;
+		InputState.Button6 = false;
+	}
+	
+	
+	if(GetButton(7))
+	{
+		if (InputDebounceCount.Button7 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button7 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button7++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button7 = 0;
+		InputState.Button7 = false;
+	}
+	
+	
+	if(GetButton(8))
+	{
+		if (InputDebounceCount.Button8 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button8 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button8++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button8 = 0;
+		InputState.Button8 = false;
+	}
+	
+	
+	if(GetButton(9))
+	{
+		if (InputDebounceCount.Button9 >= SWITCHDEBOUNCE)
+		{
+			InputState.Button9 = true;
+		}
+		else
+		{
+			InputDebounceCount.Button9++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.Button9 = 0;
+		InputState.Button9 = false;
+	}
+	
+	
+	if(GetButton(10))
+	{
+		if (InputDebounceCount.TestIO1 >= SWITCHDEBOUNCE)
+		{
+			InputState.TestIO1 = true;
+		}
+		else
+		{
+			InputDebounceCount.TestIO1++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.TestIO1 = 0;
+		InputState.TestIO1 = false;
+	}
+	
+	
+	if(GetButton(11))
+	{
+		if (InputDebounceCount.TestIO2 >= SWITCHDEBOUNCE)
+		{
+			InputState.TestIO2 = true;
+		}
+		else
+		{
+			InputDebounceCount.TestIO2++;
+		}
+	}
+	else
+	{
+		InputDebounceCount.TestIO2 = 0;
+		InputState.TestIO2 = false;
+	}
+}
+
+/**
+	@brief Parse profile message
+	@detail Takes a profile message and moves it into device profile
+	@param[in] message The profile message to be parsed
+	@param[in] len Length of the message to be parsed
+	@returns Length of message parsed or 0 on failure
+*/
 uint8_t ParseProfileMessage(uint8_t const *message, uint8_t const len)
 {
 	if(len == PROFILE_MESSAGE_LENGTH)
@@ -43,6 +257,11 @@ uint8_t ParseProfileMessage(uint8_t const *message, uint8_t const len)
 	return 0;
 }
 
+/**
+	@brief Copy profile to buffer
+	@details Copies the current device profile into an array
+	@param[out] buffer Array for holding the copied profile
+*/
 void CopyProfileToBuffer(uint8_t *buffer)
 {
 	uint8_t *aP = &MacropadProfile.profileLED.Red;
@@ -57,6 +276,10 @@ void CopyProfileToBuffer(uint8_t *buffer)
 	}
 }
 
+/**
+	@brief Save profile
+	@details Saves the current profile to flash memory
+*/
 void SaveProfile(void)
 {
 	memoryWriteCount++;
@@ -103,27 +326,25 @@ void SaveProfile(void)
 		(MacropadProfile.Button8.Modifier<<DATA_SECONDVALUE_POS)|
 		(MacropadProfile.Button8.Button<<DATA_FIRSTVALUE_POS));
 	arrayCursor++;
-	/*
-	profileMemory[arrayCursor] =
-	((MacropadProfile.Button9.Modifier)|
-	(MacropadProfile.Button9.Button<<DATA_THIRDVALUE_POS)|
-		(((uint32_t)memoryWriteCount<<8)&0x00FF0000)|
-		((uint32_t)memoryWriteCount<<24));
-		*/
+
 	profileMemory[arrayCursor] =
 	((MacropadProfile.Button9.Modifier)|
 	(MacropadProfile.Button9.Button<<DATA_THIRDVALUE_POS)|
 		((memoryWriteCount<<8)&0x00FF0000)|
 		(memoryWriteCount<<24));
 		
-	eeprom_row_erase(PROFILEADDR);
-	eeprom_page_write(PROFILEADDR, profileMemory);
+	flash_row_erase(PROFILEADDR);
+	flash_page_write(PROFILEADDR, profileMemory);
 	LoadProfile();	//reload to confirm save and to select correct save 1 or 2
 }
 
+/**
+	@brief Load Profile
+	@details Loads profile from flash memory
+*/
 void LoadProfile(void)
 {
-	eeprom_page_read(PROFILEADDR, profileMemory);
+	flash_page_read(PROFILEADDR, profileMemory);
 	uint8_t arrayCursor = 0;
 	
 	//determine if should use save 1 or 2
@@ -173,10 +394,15 @@ void LoadProfile(void)
 	MacropadProfile.Button9.Button = ((uint8_t)((profileMemory[arrayCursor]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
 	memoryWriteCount = ((profileMemory[arrayCursor] >> DATA_FIRSTVALUE_POS)|((profileMemory[arrayCursor] >> DATA_THIRDVALUE_POS)&0xFF00));
 	
-	LED_updateRGB(MacropadProfile.profileLED.Blue, MacropadProfile.profileLED.Green, MacropadProfile.profileLED.Red);
-	LED_updateBrightness(MacropadProfile.profileLED.Brightness);
+	LED_updateRGB(LEDADDR, MacropadProfile.profileLED.Blue, MacropadProfile.profileLED.Green, MacropadProfile.profileLED.Red);
+	LED_updateBrightness(LEDADDR, MacropadProfile.profileLED.Brightness);
 }
 
+/**
+	@brief Command Add
+	@details Adds a command to the command buffer
+	@param[in] command Command to add to command buffer
+*/
 void CommandBufferAdd(uint8_t command)
 {
 	CMDBuffer.buffer[CMDBuffer.wP] = command;
@@ -185,6 +411,11 @@ void CommandBufferAdd(uint8_t command)
 	else {CMDBuffer.wP++;}
 }
 
+/**
+	@brief Command Buffer Process
+	@details Processes the command buffer
+	@returns Spits out the next command in the command ring buffer, 0x00 if nothing in buffer.
+*/
 uint8_t CommandBufferProcess(void)
 {
 	if(CMDBuffer.rP != CMDBuffer.wP)
@@ -200,6 +431,12 @@ uint8_t CommandBufferProcess(void)
 	return 0;
 }
 
+/**
+	@brief Command Parse
+	@details Parses commands received on the USB config interface
+	@param[in] message
+	@param[in] len length of the message to parse
+*/
 void CommandParse(uint8_t const *message, uint8_t const len)
 {
 	switch(*message)
@@ -223,6 +460,12 @@ void CommandParse(uint8_t const *message, uint8_t const len)
 	}
 }
 
+/**
+	@brief Process Inputs
+	@details Processes input structure
+	@param[out] report Report to fill with keystrokes
+	@returns Whether or not to send a packet (1=send)
+*/
 uint8_t ProcessInputs(MacroPad_KeyboardReport *report)
 {
 	static union KBStateTrack state = {0};
@@ -375,26 +618,4 @@ uint8_t ProcessInputs(MacroPad_KeyboardReport *report)
 	//Check state and return 1 or 0 (send packet or send nothing)
 	if (state.STATE){return 1;}
 	else {return 0;}
-}
-
-void test(void)
-{
-	if(MacropadProfile.Button1.Button!=0x1e)
-	{
-		MacropadProfile.Button1.Button = 0x1e;
-		MacropadProfile.Button2.Button = 0x10;
-		MacropadProfile.Button3.Button = 0x11;
-		MacropadProfile.Button4.Button = 0x12;
-		MacropadProfile.Button5.Button = 0x13;
-		MacropadProfile.Button6.Button = 0x1d;
-		MacropadProfile.Button7.Button = 0x04;
-		MacropadProfile.Button8.Button = 0x06;
-		MacropadProfile.Button9.Button = 0x0e;
-		SaveProfile();
-	}
-	else
-	{
-		MacropadProfile.Button2.Button++;
-		SaveProfile();
-	}
 }

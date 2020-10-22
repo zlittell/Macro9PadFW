@@ -27,6 +27,8 @@
 */
 #define PROFILE_MESSAGE_LENGTH 22
 
+#define LEDADDR 0x60
+
 typedef struct DeviceInputs
 {
 	bool Button1;
@@ -149,13 +151,12 @@ struct CommandBufferStruct
 	uint8_t rP;
 };
 
-void fillTestProfile(void);
+void Debounce_Handler(void);
 uint8_t ProcessInputs(MacroPad_KeyboardReport*);
 void CommandParse(const uint8_t*, const uint8_t);
 uint8_t CommandBufferProcess(void);
 void CopyProfileToBuffer(uint8_t*);
 void SaveProfile(void);
 void LoadProfile(void);
-void test(void);
 
 #endif /* MACROPAD_H_ */

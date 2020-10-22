@@ -1,30 +1,30 @@
-/*
- * USBCallbacks.c
- *
- * Created: 9/15/2020 4:13:15 PM
- *  Author: zlitt
- */ 
+/**
+* @file USBCallbacks.c
+* @brief Code for application specific USB functionality
+* @author Zack Littell
+* @company Mechanical Squid Factory
+* @project Macro9Pad
+*/
 
-#include <sam.h>
 #include <tusb.h>
-#include "USBCallbacks.h"
 #include "macropad.h"
-
-void USB_Handler(void)
-{
-	tud_int_handler(0);
-}
 
 //--------------------------------------------------------------------+
 // Device callbacks
 //--------------------------------------------------------------------+
 
-// Invoked when device is mounted
+/**
+	@brief Mount Callback
+	@details Callback invoked when device is "mounted"
+*/
 void tud_mount_cb(void)
 {
 }
 
-// Invoked when device is unmounted
+/**
+	@brief Unmount Callback
+	@details Callback invoked when device is "unmounted"
+*/
 void tud_umount_cb(void)
 {
 }
@@ -32,12 +32,22 @@ void tud_umount_cb(void)
 // Invoked when usb bus is suspended
 // remote_wakeup_en : if host allow us  to perform remote wakeup
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
+/**
+	@brief Suspend Callback
+	@details Callback invoked when device is suspended, device must draw an average of current
+		less than 2.5mA from bus within 7ms.
+	@param[in] remote_wakeup_en indicates whether host allows us to perform remote wakeup
+*/
 void tud_suspend_cb(bool remote_wakeup_en)
 {
 	(void) remote_wakeup_en;
 }
 
 // Invoked when usb bus is resumed
+/**
+	@brief Resume Callback
+	@details Callback invoked when device is resumed
+*/
 void tud_resume_cb(void)
 {
 }
@@ -47,10 +57,14 @@ void tud_resume_cb(void)
 //--------------------------------------------------------------------+
 enum
 {
-	ConfigInterface = 0,
-	KeyboardInterface = 1
+	ConfigInterface = 0,	///< This is the HID interface for configuration
+	KeyboardInterface = 1	///< This is the HID interface for the keyboard
 };
 
+/**
+	@brief Hid Task
+	@details Periodic task for handling HID interface
+*/
 void hid_task(void)
 {
 	/*
@@ -91,10 +105,17 @@ void hid_task(void)
 	}
 }
 
-
-// Invoked when received GET_REPORT control request
-// Application must fill buffer report's content and return its length.
-// Return zero will cause the stack to STALL request
+/**
+	@brief Get Report Callback
+	@details Received GET_REPORT control request from host, application must fill buffer report's content and return its length.
+	@note Return zero will cause the stack to STALL request.
+	@param[in] itf Interface on which the control request was received
+	@param[in] report_id ReportID of the control request
+	@param[in] report_type type of report
+	@param[out] buffer USB data buffer
+	@param[in] reqlen Length of request
+	@returns Returns length of data filled in buffer
+*/
 uint16_t tud_hid_n_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen)
 {
 	// TODO not Implemented
@@ -107,8 +128,16 @@ uint16_t tud_hid_n_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type
 	return 0;
 }
 
-// Invoked when received SET_REPORT control request or
-// received data on OUT endpoint ( Report ID = 0, Type = 0 )
+/**
+	@brief Set Report Callback
+	@details Invoked when SET_REPORT control request is received or 
+		data is received on OUT endpoint.
+	@param[in] itf Interface on which the request was received
+	@param[in] report_id ReportID of the request
+	@param[in] report_type type of report
+	@param[in] buffer USB data buffer
+	@param[in] bufsize Size of USB data buffer
+*/
 void tud_hid_n_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
 	(void) report_id;

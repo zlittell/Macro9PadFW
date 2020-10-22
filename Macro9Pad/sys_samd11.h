@@ -14,8 +14,8 @@ void configureClocks(void);
 void init_TC2(void);
 void init_IO(void);
 void init_Memory(void);
-void TC2_Handler(void);
 void enable_interrupts(void);
+uint8_t GetButton(uint8_t);
 
 
 #endif /* INIT_SAMD11_H_ */
