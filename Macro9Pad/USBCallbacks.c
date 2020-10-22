@@ -9,6 +9,8 @@
 #include <tusb.h>
 #include "macropad.h"
 
+static bool remote_wakeup_supported = false;
+
 //--------------------------------------------------------------------+
 // Device callbacks
 //--------------------------------------------------------------------+
@@ -40,16 +42,32 @@ void tud_umount_cb(void)
 */
 void tud_suspend_cb(bool remote_wakeup_en)
 {
-	(void) remote_wakeup_en;
+	remote_wakeup_supported = remote_wakeup_en;
+	SleepDevice();
 }
 
-// Invoked when usb bus is resumed
 /**
 	@brief Resume Callback
 	@details Callback invoked when device is resumed
 */
 void tud_resume_cb(void)
 {
+	WakeDevice();
+}
+
+/**
+	@brief Wake USB
+	@details Checks if wake is supported and if device is suspended
+*/
+void WakeUSB(void)
+{
+	// Remote wakeup
+	if ( tud_suspended() && remote_wakeup_supported)
+	{
+		// Wake up host if we are in suspend mode
+		// and REMOTE_WAKEUP feature is enabled by host
+		tud_remote_wakeup();
+	}
 }
 
 //--------------------------------------------------------------------+
@@ -100,6 +118,7 @@ void hid_task(void)
 		
 		if (ProcessInputs(&kbReport))
 		{
+			WakeUSB();
 			tud_hid_n_report(KeyboardInterface, 0, &kbReport, sizeof(kbReport));
 		}
 	}

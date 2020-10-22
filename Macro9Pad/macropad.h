@@ -151,6 +151,8 @@ struct CommandBufferStruct
 	uint8_t rP;
 };
 
+void SleepDevice(void);
+void WakeDevice(void);
 void Debounce_Handler(void);
 uint8_t ProcessInputs(MacroPad_KeyboardReport*);
 void CommandParse(const uint8_t*, const uint8_t);

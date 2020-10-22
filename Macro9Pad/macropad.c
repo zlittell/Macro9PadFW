@@ -57,6 +57,24 @@ static void UpdateLED(void)
 }
 
 /**
+	@brief Sleep device
+	@details puts device into a sleep mode
+*/
+void SleepDevice(void)
+{
+	LED_Disable(LEDADDR);
+}
+
+/**
+	@brief Wake device
+	@details wakes device from sleep
+*/
+void WakeDevice(void)
+{
+	LED_Enable(LEDADDR);
+}
+
+/**
 *	@brief Handle button debounce.
 *	@details Call on timer interrupt to process inputs while preventing bounce.
 */
