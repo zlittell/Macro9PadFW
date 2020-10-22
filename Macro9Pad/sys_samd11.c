@@ -201,61 +201,103 @@ uint8_t GetButton(uint8_t buttonToGet)
 		//Button1 - PA23
 		case (1):
 		{
-			return (PORT->Group[0].IN.reg & PORT_PA23);
+			if(PORT->Group[0].IN.reg & PORT_PA23)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button2 - PA02
 		case (2):
 		{
-			return (PORT->Group[0].IN.reg & PORT_PA02);
+			if(PORT->Group[0].IN.reg & PORT_PA02)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button3 - PA03
 		case (3):
 		{
-			return (PORT->Group[0].IN.reg & PORT_PA03);
+			if(PORT->Group[0].IN.reg & PORT_PA03)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button4 - PA11
 		case (4):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA11);
+			if(PORT->Group[0].IN.reg & PORT_PA11)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button5 - PA06
 		case (5):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA06);
+			if(PORT->Group[0].IN.reg & PORT_PA06)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button6 - PA04
 		case (6):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA04);
+			if(PORT->Group[0].IN.reg & PORT_PA04)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button7 - PA10
 		case (7):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA10);
+			if(PORT->Group[0].IN.reg & PORT_PA10)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button8 - PA07
 		case (8):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA07);
+			if(PORT->Group[0].IN.reg & PORT_PA07)
+			{
+				return 1;
+			}
+			break;
 		}
 		//Button9 - PA05
 		case (9):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA05);
+			if(PORT->Group[0].IN.reg & PORT_PA05)
+			{
+				return 1;
+			}
+			break;
 		}
 		//TestIO1 - PA17
 		case (10):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA17);
+			if(PORT->Group[0].IN.reg & PORT_PA17)
+			{
+				return 1;
+			}
+			break;
 		}
 		//TestIO2 - PA16
 		case (11):
 		{
-			return(PORT->Group[0].IN.reg & PORT_PA16);
-		}
-		default:
-		{
-			return 0;
+			if(PORT->Group[0].IN.reg & PORT_PA16)
+			{
+				return 1;
+			}
+			break;
 		}
 	}
+	
+	return 0;
 }

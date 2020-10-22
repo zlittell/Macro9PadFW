@@ -32,7 +32,7 @@ int main(void)
 	init_Memory();
 	
 	// System Startup
-	LED_init(LEDADDR);
+	LED_Init(LEDADDR);
 	LoadProfile();
 	enable_interrupts();
 	tusb_init();

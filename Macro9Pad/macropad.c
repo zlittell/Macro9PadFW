@@ -12,6 +12,9 @@
 #include "MSF_NVM_FLASH/MSF_NVM_FLASH.h"
 #include "MSF_RGB/MSF_RGB.h"
 
+/************************************************************************/
+/* File Defines                                                         */
+/************************************************************************/
 #define PROFILEADDR (0x3F00)
 #define DATA_FIRSTVALUE_POS 24
 #define DATA_SECONDVALUE_POS 16
@@ -19,11 +22,39 @@
 #define DATA_SHIFTEDMASK 0xFF
 #define SWITCHDEBOUNCE 5
 
+/************************************************************************/
+/* Global Variables                                                     */
+/************************************************************************/
 struct DeviceInputs InputState = {0};
 struct DeviceProfile MacropadProfile;
 struct CommandBufferStruct CMDBuffer;
-uint32_t profileMemory[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint32_t profileMemory[16] = {0};
 uint16_t memoryWriteCount = 0;
+
+/************************************************************************/
+/* Code                                                                 */
+/************************************************************************/
+enum{
+	RGB_Blue=0,
+	RGB_Green,
+	RGB_Red,
+	RGB_PacketSize
+};
+
+/**
+	@brief Update device LEDs
+	@details Updates RGB values and brightness for display.
+*/
+static void UpdateLED(void)
+{
+	uint8_t values[RGB_PacketSize] = {0};
+	values[RGB_Red] = MacropadProfile.profileLED.Red;
+	values[RGB_Green] = MacropadProfile.profileLED.Green;
+	values[RGB_Blue] = MacropadProfile.profileLED.Blue;
+	
+	LED_UpdateAll(LEDADDR, values, RGB_PacketSize);
+	LED_UpdateBrightness(LEDADDR, MacropadProfile.profileLED.Brightness);
+}
 
 /**
 *	@brief Handle button debounce.
@@ -394,70 +425,7 @@ void LoadProfile(void)
 	MacropadProfile.Button9.Button = ((uint8_t)((profileMemory[arrayCursor]>>DATA_THIRDVALUE_POS)&DATA_SHIFTEDMASK));
 	memoryWriteCount = ((profileMemory[arrayCursor] >> DATA_FIRSTVALUE_POS)|((profileMemory[arrayCursor] >> DATA_THIRDVALUE_POS)&0xFF00));
 	
-	LED_updateRGB(LEDADDR, MacropadProfile.profileLED.Blue, MacropadProfile.profileLED.Green, MacropadProfile.profileLED.Red);
-	LED_updateBrightness(LEDADDR, MacropadProfile.profileLED.Brightness);
-}
-
-/**
-	@brief Command Add
-	@details Adds a command to the command buffer
-	@param[in] command Command to add to command buffer
-*/
-void CommandBufferAdd(uint8_t command)
-{
-	CMDBuffer.buffer[CMDBuffer.wP] = command;
-	
-	if(CMDBuffer.wP >= (COMMANDBUFFERSIZE-1)){CMDBuffer.wP = 0;}
-	else {CMDBuffer.wP++;}
-}
-
-/**
-	@brief Command Buffer Process
-	@details Processes the command buffer
-	@returns Spits out the next command in the command ring buffer, 0x00 if nothing in buffer.
-*/
-uint8_t CommandBufferProcess(void)
-{
-	if(CMDBuffer.rP != CMDBuffer.wP)
-	{
-		uint8_t readCommand = CMDBuffer.buffer[CMDBuffer.rP];
-		
-		if(CMDBuffer.rP >= (COMMANDBUFFERSIZE-1)){CMDBuffer.rP = 0;}
-		else {CMDBuffer.rP++;}
-		
-		return readCommand;
-	}
-	
-	return 0;
-}
-
-/**
-	@brief Command Parse
-	@details Parses commands received on the USB config interface
-	@param[in] message
-	@param[in] len length of the message to parse
-*/
-void CommandParse(uint8_t const *message, uint8_t const len)
-{
-	switch(*message)
-	{
-		case (CMD_ReceiveProfile):
-		{
-			ParseProfileMessage(message, len);
-			break;
-		}
-		case (CMD_SendProfile):
-		{
-			//GlobalCommandFlags.bits.CMDFLAG_SendProfile = 1;
-			CommandBufferAdd(*message);
-			break;
-		}
-		case (CMD_SaveProfile):
-		{
-			SaveProfile();
-			break;
-		}
-	}
+	UpdateLED();
 }
 
 /**
@@ -618,4 +586,66 @@ uint8_t ProcessInputs(MacroPad_KeyboardReport *report)
 	//Check state and return 1 or 0 (send packet or send nothing)
 	if (state.STATE){return 1;}
 	else {return 0;}
+}
+
+/**
+	@brief Command Add
+	@details Adds a command to the command buffer
+	@param[in] command Command to add to command buffer
+*/
+void CommandBufferAdd(uint8_t command)
+{
+	CMDBuffer.buffer[CMDBuffer.wP] = command;
+	
+	if(CMDBuffer.wP >= (COMMANDBUFFERSIZE-1)){CMDBuffer.wP = 0;}
+	else {CMDBuffer.wP++;}
+}
+
+/**
+	@brief Command Buffer Process
+	@details Processes the command buffer
+	@returns Spits out the next command in the command ring buffer, 0x00 if nothing in buffer.
+*/
+uint8_t CommandBufferProcess(void)
+{
+	if(CMDBuffer.rP != CMDBuffer.wP)
+	{
+		uint8_t readCommand = CMDBuffer.buffer[CMDBuffer.rP];
+		
+		if(CMDBuffer.rP >= (COMMANDBUFFERSIZE-1)){CMDBuffer.rP = 0;}
+		else {CMDBuffer.rP++;}
+		
+		return readCommand;
+	}
+	
+	return 0;
+}
+
+/**
+	@brief Command Parse
+	@details Parses commands received on the USB config interface
+	@param[in] message
+	@param[in] len length of the message to parse
+*/
+void CommandParse(uint8_t const *message, uint8_t const len)
+{
+	switch(*message)
+	{
+		case (CMD_ReceiveProfile):
+		{
+			ParseProfileMessage(message, len);
+			break;
+		}
+		case (CMD_SendProfile):
+		{
+			//GlobalCommandFlags.bits.CMDFLAG_SendProfile = 1;
+			CommandBufferAdd(*message);
+			break;
+		}
+		case (CMD_SaveProfile):
+		{
+			SaveProfile();
+			break;
+		}
+	}
 }
