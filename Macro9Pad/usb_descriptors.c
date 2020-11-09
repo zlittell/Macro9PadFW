@@ -62,14 +62,16 @@ uint8_t const * tud_descriptor_device_cb(void)
 
 uint8_t const desc_config_report[] =
 {
-  0x06, 0x01, 0x00,		// USAGE_PAGE (Generic Desktop)
+  0x06, 0x00, 0xFF,		// USAGE_PAGE (Generic Desktop)
   0x09, 0x01,			// USAGE (Vendor Usage 1)
   0xA1, 0x01,			// COLLECTION (Application)
   0x15, 0x00,			// LOGICAL_MINIMUM (0)
   0x26, 0xFF, 0x00,		// LOGICAL_MAXIMUM (255)
   0x75, 0x08,			// REPORT_SIZE (8)
   0x95, 0x16,			// REPORT_COUNT (22)
+  0x09, 0x01,			// USAGE UNDEFINED
   0x81, 0x00,			// INPUT (Data,Ary,Abs)
+  0x09, 0x01,			// USAGE UNDEFINED
   0x91, 0x00,			// OUTPUT (Data,Ary,Abs)
   0xC0					// END_COLLECTION
 };
@@ -171,7 +173,7 @@ uint8_t const desc_configuration[] =
 	0x00,						// CountryCode
 	0x01,						// bNumDescriptors
 	HID_DESC_TYPE_REPORT,		// bDescriptorType
-	0x15, 0x00,					// wDescriptorLength (21bytes)
+	0x19, 0x00,					// wDescriptorLength (25bytes)
 	// Interrupt IN Endpoint Descriptor
 	0x07,						// bLength
 	TUSB_DESC_ENDPOINT,			// bDescriptorType
