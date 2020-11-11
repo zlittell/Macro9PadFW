@@ -106,14 +106,16 @@ void hid_task(void)
 		{
 			case (CMD_SendProfile):
 			{
+				sendBuffer[0] = CMD_SendProfile;
 				CopyProfileToBuffer(sendBuffer);
-				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH+1));
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH));
 				break;
 			}
 			case (CMD_GetDeviceVersion):
 			{
+				sendBuffer[0] = CMD_GetDeviceVersion;
 				CopyDeviceVersionToBuffer(sendBuffer);
-				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH+1));
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH));
 				break;
 			}
 			case (CMD_GetDeviceSerial):

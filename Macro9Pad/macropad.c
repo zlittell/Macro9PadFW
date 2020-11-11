@@ -298,6 +298,7 @@ void Debounce_Handler(void)
 */
 void CopyDeviceVersionToBuffer(uint8_t *buffer)
 {
+	buffer++;	//Skip command byte
 	for (uint8_t i = 0; i < DEVICEVERSIONLENGTH; i++)
 	{
 		*buffer = DeviceVersion[i];
@@ -312,6 +313,7 @@ void CopyDeviceVersionToBuffer(uint8_t *buffer)
 */
 void CopyDeviceSerialNumberToBuffer(uint8_t *buffer)
 {
+	buffer++;	//Skip command byte
 	for (uint8_t i = 0; i < DEVICESERIALNUMBERLENGTH; i++)
 	{
 		*buffer = DeviceSerialNumber[i];
