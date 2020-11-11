@@ -11,6 +11,8 @@
 #include "macropad.h"
 #include "MSF_NVM_FLASH/MSF_NVM_FLASH.h"
 #include "MSF_RGB/MSF_RGB.h"
+#include "version.h"
+#include "serialnumber.h"
 
 /************************************************************************/
 /* File Defines                                                         */
@@ -54,6 +56,15 @@ static void UpdateLED(void)
 	
 	LED_UpdateAll(LEDADDR, values, RGB_PacketSize);
 	LED_UpdateBrightness(LEDADDR, MacropadProfile.profileLED.Brightness);
+}
+
+/**
+	@brief Enter Bootloader
+	@details Jumps to bootloader location in memory.
+*/
+void EnterBootloader(void)
+{
+	// Bootloader not yet implemented
 }
 
 /**
@@ -277,6 +288,34 @@ void Debounce_Handler(void)
 	{
 		InputDebounceCount.TestIO2 = 0;
 		InputState.TestIO2 = false;
+	}
+}
+
+/**
+	@brief Copy device version to buffer
+	@details Copies the constant device version into an array
+	@param[out] buffer Array for holding the copied device version
+*/
+void CopyDeviceVersionToBuffer(uint8_t *buffer)
+{
+	for (uint8_t i = 0; i < DEVICEVERSIONLENGTH; i++)
+	{
+		*buffer = DeviceVersion[i];
+		buffer++;
+	}
+}
+
+/**
+	@brief Copy device serial number to buffer
+	@details Copies the constant device serial number into an array
+	@param[out] buffer Array for holding the copied device serial number
+*/
+void CopyDeviceSerialNumberToBuffer(uint8_t *buffer)
+{
+	for (uint8_t i = 0; i < DEVICESERIALNUMBERLENGTH; i++)
+	{
+		*buffer = DeviceSerialNumber[i];
+		buffer++;
 	}
 }
 
@@ -654,16 +693,21 @@ void CommandParse(uint8_t const *message, uint8_t const len)
 			ParseProfileMessage(message, len);
 			break;
 		}
-		case (CMD_SendProfile):
+		case (CMD_Bootloader):
 		{
-			//GlobalCommandFlags.bits.CMDFLAG_SendProfile = 1;
-			CommandBufferAdd(*message);
+			EnterBootloader();
 			break;
 		}
 		case (CMD_SaveProfile):
 		{
 			SaveProfile();
+			CommandBufferAdd(*message);
+		}
+		default:
+		{
+			CommandBufferAdd(*message);
 			break;
 		}
 	}
 }
+

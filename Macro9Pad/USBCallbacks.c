@@ -99,14 +99,26 @@ void hid_task(void)
 	/*------------- Config Interface -------------*/
 	if (tud_hid_n_ready(ConfigInterface))
 	{
+		uint8_t sendBuffer[PROFILE_MESSAGE_LENGTH+1];
+		
 		//Process CMDs
 		switch(CommandBufferProcess())
 		{
 			case (CMD_SendProfile):
 			{
-				uint8_t sendBuffer[PROFILE_MESSAGE_LENGTH+1];
 				CopyProfileToBuffer(sendBuffer);
 				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH+1));
+				break;
+			}
+			case (CMD_GetDeviceVersion):
+			{
+				CopyDeviceVersionToBuffer(sendBuffer);
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH+1));
+				break;
+			}
+			case (CMD_GetDeviceSerial):
+			{
+				break;
 			}
 		}
 	}

@@ -224,6 +224,12 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="serialnumber.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serialnumber.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="sys_samd11.c">
       <SubType>compile</SubType>
     </Compile>
@@ -288,6 +294,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usb_descriptors.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="version.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="version.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

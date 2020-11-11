@@ -24,6 +24,7 @@
  */
 
 #include "tusb.h"
+#include "serialnumber.h"
 
 //--------------------------------------------------------------------+
 // Device Descriptors
@@ -244,7 +245,7 @@ char const* string_desc_arr [] =
   (const char[]) { 0x09, 0x04 },	// 0: is supported language is English (0x0409)
   "Mechanical Squid Factory",		// 1: Manufacturer
   "Macro9Pad",						// 2: Product
-  "123456",							// 3: Serials, should use chip ID
+  DeviceSerialNumber,				// 3: Serials, pulled from file
   "Macro9Pad Main Configuration",	// 4: Main Configuration String
   "Configuration Interface",		// 5: Interface 1 String
   "Keyboard Interface",				// 6: Interface 2 String
