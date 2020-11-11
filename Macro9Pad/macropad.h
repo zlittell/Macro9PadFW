@@ -161,6 +161,7 @@ uint8_t ProcessInputs(MacroPad_KeyboardReport*);
 void CommandParse(const uint8_t*, const uint8_t);
 uint8_t CommandBufferProcess(void);
 void CopyDeviceVersionToBuffer(uint8_t*);
+void CopyDeviceSerialNumberToBuffer(uint8_t*);
 void CopyProfileToBuffer(uint8_t*);
 void SaveProfile(void);
 void LoadProfile(void);

@@ -99,7 +99,7 @@ void hid_task(void)
 	/*------------- Config Interface -------------*/
 	if (tud_hid_n_ready(ConfigInterface))
 	{
-		uint8_t sendBuffer[PROFILE_MESSAGE_LENGTH+1];
+		uint8_t sendBuffer[PROFILE_MESSAGE_LENGTH] = {0};
 		
 		//Process CMDs
 		switch(CommandBufferProcess())
@@ -120,6 +120,9 @@ void hid_task(void)
 			}
 			case (CMD_GetDeviceSerial):
 			{
+				sendBuffer[0] = CMD_GetDeviceSerial;
+				CopyDeviceSerialNumberToBuffer(sendBuffer);
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH));
 				break;
 			}
 		}
