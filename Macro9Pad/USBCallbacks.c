@@ -85,21 +85,10 @@ enum
 */
 void hid_task(void)
 {
-	/*
-	uint8_t wakeup = 0;
-	// Remote wakeup
-	if ( tud_suspended() && wakeup)
-	{
-		// Wake up host if we are in suspend mode
-		// and REMOTE_WAKEUP feature is enabled by host
-		tud_remote_wakeup();
-	}
-	*/
-
 	/*------------- Config Interface -------------*/
 	if (tud_hid_n_ready(ConfigInterface))
 	{
-		uint8_t sendBuffer[PROFILE_MESSAGE_LENGTH] = {0};
+		uint8_t sendBuffer[USB_MESSAGE_LENGTH] = {0};
 		
 		//Process CMDs
 		switch(CommandBufferProcess())
@@ -108,21 +97,21 @@ void hid_task(void)
 			{
 				sendBuffer[0] = CMD_SendProfile;
 				CopyProfileToBuffer(sendBuffer);
-				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH));
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, USB_MESSAGE_LENGTH);
 				break;
 			}
 			case (CMD_GetDeviceVersion):
 			{
 				sendBuffer[0] = CMD_GetDeviceVersion;
 				CopyDeviceVersionToBuffer(sendBuffer);
-				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH));
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, USB_MESSAGE_LENGTH);
 				break;
 			}
 			case (CMD_GetDeviceSerial):
 			{
 				sendBuffer[0] = CMD_GetDeviceSerial;
 				CopyDeviceSerialNumberToBuffer(sendBuffer);
-				tud_hid_n_report(ConfigInterface, 0, sendBuffer, (PROFILE_MESSAGE_LENGTH));
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, USB_MESSAGE_LENGTH);
 				break;
 			}
 		}

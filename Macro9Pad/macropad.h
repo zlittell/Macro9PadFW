@@ -26,6 +26,8 @@
  *       22 bytes
 */
 #define PROFILE_MESSAGE_LENGTH 22
+// Add 1 Command Byte
+#define USB_MESSAGE_LENGTH PROFILE_MESSAGE_LENGTH+1
 
 #define LEDADDR 0x60
 
