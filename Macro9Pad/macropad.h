@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 /*
+ * CMD - 1
  * RGB - 4 (Red, Green, Blue, Brightness)
  * B1  - 2
  * B2  - 2
@@ -23,7 +24,7 @@
  * B8  - 2
  * B9  - 2
  * --------
- *       22 bytes
+ *       23 bytes
 */
 #define PROFILE_MESSAGE_LENGTH 22
 // Add 1 Command Byte

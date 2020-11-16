@@ -330,12 +330,12 @@ void CopyDeviceSerialNumberToBuffer(uint8_t *buffer)
 */
 uint8_t ParseProfileMessage(uint8_t const *message, uint8_t const len)
 {
-	if(len == PROFILE_MESSAGE_LENGTH)
+	if(len == USB_MESSAGE_LENGTH)
 	{
 		uint8_t *aP = &MacropadProfile.profileLED.Red;
 		message++;	// move past CMD byte
 		
-		for (uint8_t i = 0; i < len; i++)
+		for (uint8_t i = 1; i < len; i++)
 		{
 			*aP = *message;
 			aP++;
@@ -693,6 +693,8 @@ void CommandParse(uint8_t const *message, uint8_t const len)
 		case (CMD_ReceiveProfile):
 		{
 			ParseProfileMessage(message, len);
+			CommandBufferAdd(*message);
+			UpdateLED();
 			break;
 		}
 		case (CMD_Bootloader):

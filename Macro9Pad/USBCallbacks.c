@@ -93,6 +93,12 @@ void hid_task(void)
 		//Process CMDs
 		switch(CommandBufferProcess())
 		{
+			case (CMD_ReceiveProfile):
+			{
+				sendBuffer[0] = CMD_ReceiveProfile;
+				tud_hid_n_report(ConfigInterface, 0, sendBuffer, USB_MESSAGE_LENGTH);
+				break;
+			}
 			case (CMD_SendProfile):
 			{
 				sendBuffer[0] = CMD_SendProfile;
