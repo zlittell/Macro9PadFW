@@ -39,7 +39,7 @@ Macro9Pad/usb_descriptors.c \
 Macro9Pad/version.c
 
 # convert c files to list of .o files
-OBJ += $(C_SRCS:.c=.o)
+OBJ += $(addprefix $(BUILD)/obj/, $(C_SRCS:.c=.o))
 
 # folders to include for finding header files
 INC += \
@@ -98,7 +98,6 @@ else
 endif
 
 # add all include folders to cflags with -I prefix
-CFLAGS += $(addprefix -I,$(INC))
 COMPILEFLAGS += $(addprefix -I,$(INC))
 
 .DEFAULT_GOAL := all
@@ -106,18 +105,22 @@ all: $(BUILD)/bin/$(PROJECT).bin
 
 #Compile individual object files without linking
 $(info Building Object Files)
-$(OBJ): %.o: %.c
+#$(OBJ): %.o: %.c
+$(OBJ):$(C_SRCS)
 	$(info Building $<)
-	@mkdir -p $(BUILD)/obj/$(@D)
-	$(CC) -c $(COMPILEFLAGS) $< -o $(BUILD)/obj/$@
+	@mkdir -p $(@D)
+	$(CC) -c $(COMPILEFLAGS) $< -o $@
 
-$(BUILD)/bin/$(PROJECT).elf: $(addprefix $(BUILD)/obj/, $(OBJ))
+$(info Building ELF file)
+$(BUILD)/bin/$(PROJECT).elf: $(OBJ)
 	$(MKDIR)
 	$(CC) -o $@ $^ $(LINKINGFLAGS)
 
+$(info Building bin from elf)
 $(BUILD)/bin/$(PROJECT).bin: $(BUILD)/bin/$(PROJECT).elf
 	$(OBJCOPY) -o binary $@ $<
 
 .PHONY: all clean
 clean:
+	$(info Removing build)
 	$(RM) -rf $(BUILD)
