@@ -39,8 +39,7 @@ Macro9Pad/usb_descriptors.c \
 Macro9Pad/version.c
 
 # convert c files to list of .o files
-OBJ += $(addprefix $(BUILD)/obj/, $(SRC_S:.s=.o))
-OBJ += $(addprefix $(BUILD)/obj/, $(SRC_C:.c=.o))
+OBJ += $(C_SRCS:.c=.o)
 
 # folders to include for finding header files
 INC += \
@@ -72,18 +71,63 @@ CFLAGS += -Wl,-Map=$(PROJECT).map
 # Add linker files as flags with -T prefix
 CFLAGS += -T Macro9Pad/Device_Startup/samd11d14am_flash.ld
 
+#<------------------FILE COMPILATION FLAGS--------------------->
+# set source code as C
+COMPILEFLAGS += -x c
+# generate code for the ARM Thumb processor state
+COMPILEFLAGS += -mthumb
+# include a processor predefine macro
+COMPILEFLAGS += -D__SAMD11D14AM__
+# Place items into sections in output file
+COMPILEFLAGS += -ffunction-sections \
+# Always load function address into pointer
+COMPILEFLAGS += -mlong-calls
+# Warning flags
+COMPILEFLAGS += \
+	-Wall \
+	-Werror
+# Set Processor Core
+COMPILEFLAGS += -mcpu=cortex-m0plus \
+# Set C standard
+COMPILEFLAGS += -c -std=gnu99 \
+
+#<------------------HEX COMPILATION FLAGS--------------------->
+LINKINGFLAGS += \
+	-mthumb \
+	-Wl,-Map="Macro9Pad.map" \
+	-Wl,--start-group -lm  \
+	-Wl,--end-group -L"..\\Device_Startup"  \
+	-Wl,--gc-sections \
+	-T Macro9Pad/Device_Startup/samd11d14am_flash.ld \
+	-mcpu=cortex-m0plus
+
+# Debugging/Optimization
+ifeq ($(DEBUG), 1)
+  COMPILEFLAGS += \
+  	-DDEBUG \
+  	-Og \
+  	-g3 \
+else
+  COMPILEFLAGS += -Os
+endif
+
 # add all include folders to cflags with -I prefix
 CFLAGS += $(addprefix -I,$(INC))
+COMPILEFLAGS += $(addprefix -I,$(INC))
 
 .DEFAULT_GOAL := all
 all: $(BUILD)/bin/$(PROJECT).bin
 
+#Compile individual object files without linking
+$(info Building Object Files)
 $(OBJ): %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(info Building $<)
+	@mkdir -p $(BUILD)/obj/$(@D)
+	$(CC) -c $(COMPILEFLAGS) $< -o $(BUILD)/obj/$@
 
-$(BUILD)/bin/$(PROJECT).elf: $(OBJ)
+$(BUILD)/bin/$(PROJECT).elf: $(addprefix $(BUILD)/obj/, $(OBJ))
 	$(MKDIR)
-	$(LD) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(LINKINGFLAGS)
 
 $(BUILD)/bin/$(PROJECT).bin: $(BUILD)/bin/$(PROJECT).elf
 	$(OBJCOPY) -o binary $@ $<
