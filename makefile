@@ -57,20 +57,6 @@ Macro9Pad/tinyusb/hw/mcu/microchip/samd11/hri \
 Macro9Pad/tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include \
 Macro9Pad/Drivers
 
-# Set up compiler flags
-CFLAGS += -mcpu=cortex-m0plus -mthumb
-CFLAGS += -D__SAMD11D14AM__
-CFLAGS += -Wall -Werror -std=c11
-CFLAGS += -O0
-CFLAGS += -g
-#CFLAGS += -specs=nosys.specs -specs=nano.specs
-CFLAGS += -ffunction-sections -fdata-sections
-CFLAGS += -Wl,--gc-sections 
-CFLAGS += -Wl,-Map=$(PROJECT).map
-
-# Add linker files as flags with -T prefix
-CFLAGS += -T Macro9Pad/Device_Startup/samd11d14am_flash.ld
-
 #<------------------FILE COMPILATION FLAGS--------------------->
 # set source code as C
 COMPILEFLAGS += -x c
@@ -106,7 +92,7 @@ ifeq ($(DEBUG), 1)
   COMPILEFLAGS += \
   	-DDEBUG \
   	-Og \
-  	-g3 \
+  	-g3 
 else
   COMPILEFLAGS += -Os
 endif
