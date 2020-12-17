@@ -83,8 +83,19 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
-      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.81\include</Value>
+      <Value>..</Value>
+      <Value>../tinyusb/src</Value>
+      <Value>../tinyusb/hw</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/config</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/include</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hal/include</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hal/utils/include</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hpl/pm</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hpl/port</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/hri</Value>
+      <Value>../tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include</Value>
+      <Value>../Drivers</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
@@ -101,6 +112,7 @@
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+  <armgcc.linker.memorysettings.ExternalRAM />
   <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd11d14am_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
