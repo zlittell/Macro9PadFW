@@ -7,9 +7,8 @@ BUILD = _build
 CC = arm-none-eabi-gcc # C Compiler
 LD = arm-none-eabi-ld #  Linker
 OBJCOPY = arm-none-eabi-objcopy # Final Binary Builder
-FLASHER = lm4flash # Flashing utility
+SIZE = arm-none-eabi-size # Size tool
 RM      = rm -rf # Remove recursively command
-MKDIR   = @mkdir -p $(@D) # Creates folders if not present
 
 # list of source files
 C_SRCS +=  \
@@ -39,7 +38,8 @@ Macro9Pad/usb_descriptors.c \
 Macro9Pad/version.c
 
 # convert c files to list of .o files
-OBJ += $(addprefix $(BUILD)/obj/, $(C_SRCS:.c=.o))
+OBJ += $(C_SRCS:.c=.o)
+OBJASPATH = $(addprefix $(BUILD)/obj/, $(OBJ))
 
 # folders to include for finding header files
 INC += \
@@ -58,69 +58,66 @@ Macro9Pad/tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include \
 Macro9Pad/Drivers
 
 #<------------------FILE COMPILATION FLAGS--------------------->
-# set source code as C
-COMPILEFLAGS += -x c
-# generate code for the ARM Thumb processor state
-COMPILEFLAGS += -mthumb
-# include a processor predefine macro
-COMPILEFLAGS += -D__SAMD11D14AM__
-# Place items into sections in output file
-COMPILEFLAGS += -ffunction-sections \
-# Always load function address into pointer
-COMPILEFLAGS += -mlong-calls
-# Warning flags
 COMPILEFLAGS += \
-	-Wall \
-	-Werror
-# Set Processor Core
-COMPILEFLAGS += -mcpu=cortex-m0plus \
-# Set C standard
-COMPILEFLAGS += -c -std=gnu99 \
-
-#<------------------HEX COMPILATION FLAGS--------------------->
-LINKINGFLAGS += \
+	-x c \
 	-mthumb \
-	-Wl,-Map="Macro9Pad.map" \
-	-Wl,--start-group -lm  \
-	-Wl,--end-group -L"..\\Device_Startup"  \
-	-Wl,--gc-sections \
-	-T Macro9Pad/Device_Startup/samd11d14am_flash.ld \
-	-mcpu=cortex-m0plus
+	-D__SAMD11D14AM__ \
+	-ffunction-sections \
+	-mlong-calls \
+	-Wall \
+	-mcpu=cortex-m0plus \
+	-std=gnu99
 
 # Debugging/Optimization
 ifeq ($(DEBUG), 1)
-  COMPILEFLAGS += \
-  	-DDEBUG \
-  	-Og \
-  	-g3 
+COMPILEFLAGS += \
+  -DDEBUG \
+  -Og \
+  -g3 
 else
-  COMPILEFLAGS += -Os
+COMPILEFLAGS += \
+  -DNDEBUG \
+  -Os
 endif
 
 # add all include folders to cflags with -I prefix
 COMPILEFLAGS += $(addprefix -I,$(INC))
 
+LDFLAGS += \
+  -mthumb \
+	-Wl,-Map="Macro9Pad.map" \
+	--specs=nano.specs \
+	--specs=nosys.specs \
+	-L"./Macro9Pad/Device_Startup" \
+	-Wl,--gc-sections \
+	-mcpu=cortex-m0plus \
+	-T./Macro9Pad/Device_Startup/samd11d14am_flash.ld
+
+LINKER_SCRIPT_DEP+=  \
+../Device_Startup/samd11d14am_flash.ld \
+../Device_Startup/samd11d14am_sram.ld
+
 .DEFAULT_GOAL := all
-all: $(BUILD)/bin/$(PROJECT).bin
+all: $(BUILD)/bin/$(PROJECT).elf size
 
 #Compile individual object files without linking
 $(info Building Object Files)
-#$(OBJ): %.o: %.c
-$(OBJ):$(C_SRCS)
+%.o:%.c
 	$(info Building $<)
-	@mkdir -p $(@D)
-	$(CC) -c $(COMPILEFLAGS) $< -o $@
+	mkdir -p $(BUILD)/obj/$(@D)
+	$(CC) -c $(COMPILEFLAGS) -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -o "$(BUILD)/obj/$@" "$<"
 
 $(info Building ELF file)
 $(BUILD)/bin/$(PROJECT).elf: $(OBJ)
-	$(MKDIR)
-	$(CC) -o $@ $^ $(LINKINGFLAGS)
+	mkdir -p $(@D)
+	$(CC) -o $@ $(OBJASPATH) $(LDFLAGS)
 
-$(info Building bin from elf)
-$(BUILD)/bin/$(PROJECT).bin: $(BUILD)/bin/$(PROJECT).elf
-	$(OBJCOPY) -o binary $@ $<
+size: $(BUILD)/bin/$(PROJECT).elf
+	-@echo ''
+	@$(SIZE) $<
+	-@echo ''
 
 .PHONY: all clean
 clean:
 	$(info Removing build)
-	$(RM) -rf $(BUILD)
+	$(RM) $(BUILD)
