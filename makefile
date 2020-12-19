@@ -105,7 +105,7 @@ $(info Building Object Files)
 %.o:%.c
 	$(info Building $<)
 	mkdir -p $(BUILD)/obj/$(@D)
-	$(CC) -c $(COMPILEFLAGS) -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -o "$(BUILD)/obj/$@" "$<"
+	$(CC) -c $(COMPILEFLAGS) -o "$(BUILD)/obj/$@" "$<"
 
 $(info Building ELF file)
 $(BUILD)/bin/$(PROJECT).elf: $(OBJ)
