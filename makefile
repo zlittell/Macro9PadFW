@@ -64,9 +64,21 @@ COMPILEFLAGS += \
 	-D__SAMD11D14AM__ \
 	-ffunction-sections \
 	-mlong-calls \
-	-Wall \
 	-mcpu=cortex-m0plus \
 	-std=gnu99
+
+COMPILEFLAGS += \
+	-Wall \
+	-Wextra \
+	-Wdouble-promotion \
+  	-Wstrict-prototypes \
+	-Wfatal-errors \
+	-Wfloat-equal \
+	-Wshadow \
+	-Wwrite-strings \
+	-Wmissing-format-attribute \
+	-Wunreachable-code \
+	-Wcast-align
 
 # Debugging/Optimization
 ifeq ($(DEBUG), 1)
@@ -77,7 +89,8 @@ COMPILEFLAGS += \
 else
 COMPILEFLAGS += \
   -DNDEBUG \
-  -Os
+  -Os \
+  -Werror
 endif
 
 # add all include folders to cflags with -I prefix

@@ -706,6 +706,7 @@ void CommandParse(uint8_t const *message, uint8_t const len)
 		{
 			SaveProfile();
 			CommandBufferAdd(*message);
+			break;
 		}
 		default:
 		{
