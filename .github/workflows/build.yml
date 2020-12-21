@@ -52,6 +52,10 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
-      # Run build
-      - name: Build
+      # Run Debug Build
+      - name: Debug Build
+        run: make DEBUG=1 clean all
+      
+      # Run Production Build
+      - name: Release Build
         run: make clean all
