@@ -43,8 +43,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Run apt get to install gcc
-      - name: arm-none-eabi-gcc
-        uses: fiam/arm-none-eabi-gcc@v1
+      - name: Install ARM GCC
+        run: sudo apt-get install gcc-arm-none-eabi
 
       # Grab repo and initialize submodules
       - name: Checkout repo
