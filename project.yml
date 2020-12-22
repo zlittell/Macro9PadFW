@@ -1,4 +1,5 @@
 ---
+# [MSF] Macro9Pad
 
 # Notes:
 # Sample project C code is not presently written to produce a release artifact.
@@ -9,7 +10,7 @@
   :use_exceptions: FALSE
   :use_test_preprocessor: TRUE
   :use_auxiliary_dependencies: TRUE
-  :build_root: _build
+  :build_root: _build/test
 #  :release_build: TRUE
   :test_file_prefix: test_
   :which_ceedling: gem
@@ -34,7 +35,10 @@
     - +:test/**
     - -:test/support
   :source:
-    - src/**
+    - src/*
+    - src/drivers/MSF_I2C/*
+    - src/drivers/MSF_NVM_FLASH/*
+    - src/drivers/MSF_RGB/*
   :support:
     - test/support
   :libraries: []
@@ -98,4 +102,5 @@
   :enabled:
     - stdout_pretty_tests_report
     - module_generator
+    - gcov
 ...

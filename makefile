@@ -59,7 +59,7 @@ OBJASPATH = $(addprefix $(BUILDDIR)/obj/, $(OBJ))
 
 # folders to include for finding header files
 INC += \
-src/include \
+src/ \
 src/drivers/tinyusb/src \
 src/drivers/tinyusb/hw  \
 src/drivers/tinyusb/hw/mcu/microchip/samd11 \
