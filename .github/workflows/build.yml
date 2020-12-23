@@ -32,8 +32,7 @@ jobs:
         run: |
           # Install Ceedling
           gem install ceedling
-          #cd test
-          #ceedling test:all
+          ceedling test:all
 
   # This workflow contains a single job called "build"
   build:
