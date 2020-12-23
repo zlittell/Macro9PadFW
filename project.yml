@@ -68,6 +68,7 @@
     uint32:   UINT32
     int8:     INT8
     bool:     UINT8
+  :treat_externs: :include #externs will be mocked
 
 # Add -gcov to the plugins list to make sure of the gcov plugin
 # You will need to have gcov and gcovr both installed to make it work.
