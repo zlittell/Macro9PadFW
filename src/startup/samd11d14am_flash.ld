@@ -39,8 +39,8 @@ SEARCH_DIR(.)
 */
 MEMORY
 {
-  boot     (r)   : ORIGIN = 0x00000000, LENGTH = 0x00000000
-  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00003F00
+  boot     (r)   : ORIGIN = 0x00000000, LENGTH = 0x00000400
+  rom      (rx)  : ORIGIN = 0x00000400, LENGTH = 0x00003F00
   eep	   (rw)	 : ORIGIN = 0x00003F00, LENGTH = 0x00000100
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00001000
 }
