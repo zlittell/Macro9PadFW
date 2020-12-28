@@ -107,7 +107,8 @@ LDFLAGS += \
 	-L"./src/startup" \
 	-Wl,--gc-sections \
 	-mcpu=cortex-m0plus \
-	-T"./src/startup/samd11d14am_flash.ld"
+	-T"./src/startup/samd11d14am_flash.ld" \
+	-Wl,--print-memory-usage
 
 .DEFAULT_GOAL := all
 all: $(BUILDDIR)/bin/$(PROJECT).bin size
