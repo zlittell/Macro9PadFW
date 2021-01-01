@@ -13,6 +13,7 @@
 #include "MSF_I2C/MSF_I2C.h"
 #include "MSF_RGB/MSF_RGB.h"
 #include "macropad.h"
+#include "sam.h"
 
 /**
 	@brief Application Main

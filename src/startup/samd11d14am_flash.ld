@@ -51,6 +51,9 @@ STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stac
 /* Section Definitions */
 SECTIONS
 {
+    /* variable to bootloading */
+    .bootloaderVariable 0x20000000 : {KEEP(*(.bootloaderVariable))}
+
 	/* eeprom sim area */
 	.eepromBlock :
 	{

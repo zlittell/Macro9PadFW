@@ -13,6 +13,9 @@
 #include "MSF_RGB/MSF_RGB.h"
 #include "version.h"
 #include "serialnumber.h"
+#include "sam.h"
+
+uint32_t bVar __attribute__((section(".bootloaderVariable"))) = 0x1000;
 
 /************************************************************************/
 /* File Defines                                                         */
@@ -65,6 +68,8 @@ static void UpdateLED(void)
 void EnterBootloader(void)
 {
 	// Bootloader not yet implemented
+	bVar = 0x54F161B;
+	NVIC_SystemReset();
 }
 
 /**
