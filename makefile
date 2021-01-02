@@ -11,19 +11,43 @@ OBJCOPY = arm-none-eabi-objcopy # Final Binary Builder
 SIZE = arm-none-eabi-size # Size tool
 RM      = rm -rf # Remove recursively command
 
+# Compiler Flags
+COMPILEFLAGS += \
+	-x c \
+	-mthumb \
+	-ggdb \
+	-D__SAMD11D14AM__ \
+	-fdata-sections \
+	-ffunction-sections \
+	-mlong-calls \
+	-mcpu=cortex-m0plus \
+	-std=gnu99
+
+COMPILEFLAGS += \
+	-Wall \
+	-Wextra \
+	-Wdouble-promotion \
+  	-Wstrict-prototypes \
+	-Wfatal-errors \
+	-Wfloat-equal \
+	-Wshadow \
+	-Wwrite-strings \
+	-Wmissing-format-attribute \
+	-Wunreachable-code \
+	-Wcast-align
+
 # BUILD TYPE DIFFERENTIATION
 ifeq ($(DEBUG), 1)
 BUILDDIR = $(BUILDBASEDIR)/DEBUG
 COMPILEFLAGS += \
   -DDEBUG \
-  -Og \
-  -g3 
+  -O1
 else
 BUILDDIR = $(BUILDBASEDIR)/RELEASE
 COMPILEFLAGS += \
+  -Werror \
   -DNDEBUG \
-  -Os \
-  -Werror
+  -Os
 endif
 
 # list of source files
@@ -74,27 +98,7 @@ src/drivers/tinyusb/hw/mcu/microchip/samd11/CMSIS/Core/Include \
 src/drivers
 
 #<------------------FILE COMPILATION FLAGS--------------------->
-COMPILEFLAGS += \
-	-x c \
-	-mthumb \
-	-D__SAMD11D14AM__ \
-	-ffunction-sections \
-	-mlong-calls \
-	-mcpu=cortex-m0plus \
-	-std=gnu99
 
-COMPILEFLAGS += \
-	-Wall \
-	-Wextra \
-	-Wdouble-promotion \
-  	-Wstrict-prototypes \
-	-Wfatal-errors \
-	-Wfloat-equal \
-	-Wshadow \
-	-Wwrite-strings \
-	-Wmissing-format-attribute \
-	-Wunreachable-code \
-	-Wcast-align
 
 # add all include folders to cflags with -I prefix
 COMPILEFLAGS += $(addprefix -I,$(INC))
