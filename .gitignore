@@ -1,5 +1,6 @@
 #Build Directories
 _build/
+.vscode/
 
 #Host openocd configuration file
 openocd.cfg
