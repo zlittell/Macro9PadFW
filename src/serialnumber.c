@@ -7,7 +7,7 @@
 
 #include "serialnumber.h"
 
-const char DeviceSerialNumber[DEVICESERIALNUMBERLENGTH] = 
+const char __attribute__ ((section (".serialNumberSection"))) DeviceSerialNumber[DEVICESERIALNUMBERLENGTH] = 
 {
 	"0123456789"
 };

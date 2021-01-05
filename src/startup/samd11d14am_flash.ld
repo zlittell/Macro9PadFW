@@ -40,7 +40,8 @@ SEARCH_DIR(.)
 MEMORY
 {
   boot     (r)   : ORIGIN = 0x00000000, LENGTH = 0x00000000
-  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00003F00
+  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00003EF6
+  serial   (rw)  : ORIGIN = 0x00003EF4, LENGTH = 0x0000000C
   eep	   (rw)	 : ORIGIN = 0x00003F00, LENGTH = 0x00000100
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00001000
 }
@@ -56,6 +57,12 @@ SECTIONS
 	{
 		KEEP(*(.deviceProfileSection)) /* keep my profile even if not referenced */
 	} > eep
+
+    /* serial number section */
+    .serialNumber :
+    {
+        KEEP(*(.serialNumberSection))
+    } > serial
 
     .text :
     {
