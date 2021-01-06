@@ -168,5 +168,6 @@ void CopyDeviceSerialNumberToBuffer(uint8_t*);
 void CopyProfileToBuffer(uint8_t*);
 void SaveProfile(void);
 void LoadProfile(void);
+void BootloaderConfig(uint8_t);
 
 #endif /* MACROPAD_H_ */

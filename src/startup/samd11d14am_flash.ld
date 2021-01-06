@@ -43,7 +43,8 @@ MEMORY
   rom      (rx)  : ORIGIN = 0x00000400, LENGTH = 0x00003EF6
   serial   (rw)  : ORIGIN = 0x00003EF4, LENGTH = 0x0000000C
   eep	   (rw)	 : ORIGIN = 0x00003F00, LENGTH = 0x00000100
-  ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00001000
+  bV       (rw)  : ORIGIN = 0x20000000, LENGTH = 0x00000004
+  ram      (rwx) : ORIGIN = 0x20000004, LENGTH = 0x00000FFC
 }
 
 /* The stack size used by the application. NOTE: you need to adjust according to your application. */
@@ -52,9 +53,6 @@ STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stac
 /* Section Definitions */
 SECTIONS
 {
-    /* variable to bootloading */
-    .bootloaderVariable 0x20000000 : {KEEP(*(.bootloaderVariable))}
-
 	/* eeprom sim area */
 	.eepromBlock :
 	{
@@ -126,6 +124,12 @@ SECTIONS
 
     . = ALIGN(4);
     _etext = .;
+
+    /* bootloader variable section */
+    .bootVariable :
+    {
+        KEEP(*(.bootloaderVariable))
+    } > bV
 
     .relocate : AT (_etext)
     {

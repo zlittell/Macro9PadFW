@@ -15,8 +15,6 @@
 #include "serialnumber.h"
 #include "sam.h"
 
-uint32_t bVar __attribute__((section(".bootloaderVariable"))) = 0x1000;
-
 /************************************************************************/
 /* File Defines                                                         */
 /************************************************************************/
@@ -65,11 +63,15 @@ static void UpdateLED(void)
 	@brief Enter Bootloader
 	@details Jumps to bootloader location in memory.
 */
-void EnterBootloader(void)
+uint32_t __attribute__ ((section (".bootloaderVariable"))) bVar = 0x6666;
+void BootloaderConfig(uint8_t enterBootLoader)
 {
 	// Bootloader not yet implemented
-	bVar = 0x54F161B;
-	NVIC_SystemReset();
+	if (enterBootLoader)
+	{
+		bVar = 0x54F161B;
+		NVIC_SystemReset();
+	}
 }
 
 /**
@@ -704,7 +706,7 @@ void CommandParse(uint8_t const *message, uint8_t const len)
 		}
 		case (CMD_Bootloader):
 		{
-			EnterBootloader();
+			BootloaderConfig(1);
 			break;
 		}
 		case (CMD_SaveProfile):
