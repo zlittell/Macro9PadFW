@@ -10,7 +10,7 @@
 
 const uint8_t DeviceVersion[DEVICEVERSIONLENGTH] = 
 {
-	0x00,	// Major
+	0x01,	// Major
 	0x00,	// Minor
-	0x01,	// Revision
+	0x00,	// Revision
 };
